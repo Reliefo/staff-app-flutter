@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "363424798383",
+    "firebase_url": "https://fir-aws-f7ed6.firebaseio.com",
+    "project_id": "fir-aws-f7ed6",
+    "storage_bucket": "fir-aws-f7ed6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:363424798383:android:d4eb03f55490b6a056a65a",
+        "android_client_info": {
+          "package_name": "com.example.staffapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "363424798383-sd46l290raleahlt8ic934meo1pb5inb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP7Yahl3NtjRIx61GuOjkO8UXE09Ep6N0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "363424798383-sd46l290raleahlt8ic934meo1pb5inb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
