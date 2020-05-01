@@ -5,9 +5,11 @@ import 'package:staffapp/pop_up.dart';
 class HomePage extends StatelessWidget {
   final List<NotificationData> notifications;
   final List<Map<String, String>> popUpDisp;
+  final requestStatusUpdate;
   HomePage({
     this.notifications,
     this.popUpDisp,
+    this.requestStatusUpdate,
   });
   @override
   Widget build(BuildContext context) {
@@ -24,13 +26,23 @@ class HomePage extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
-                            Text("Order Update"),
-                            Text("16:20"),
-                          ],
-                        ),
+                        popUpDisp[index]["request_type"] == "pickup_request"
+                            ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Order Update"),
+                                  Text("16:20"),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text("Assistance Request"),
+                                  Text("16:20"),
+                                ],
+                              ),
 //                  Row(
 //                    children: <Widget>[
 //                      Text("body: ${notifications[index].body}"),
@@ -46,6 +58,7 @@ class HomePage extends StatelessWidget {
                         builder: (BuildContext context) {
                           return PopUp(
                             singlePopUpDisp: popUpDisp[index],
+                            requestStatusUpdate: requestStatusUpdate,
                           );
                         });
                   },

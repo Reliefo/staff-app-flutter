@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 
 class PopUp extends StatelessWidget {
   final Map<String, String> singlePopUpDisp;
+  final requestStatusUpdate;
   PopUp({
     this.singlePopUpDisp,
+    this.requestStatusUpdate,
   });
+
+  sendStatus(status) {
+    requestStatusUpdate({"status": status, "data": singlePopUpDisp});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -29,112 +36,225 @@ class PopUp extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min, // To make the card compact
-            children: <Widget>[
-              Text(
-                "Order Update",
-                style: TextStyle(
-                  fontSize: 24.0,
-                  fontWeight: FontWeight.w700,
+          child: singlePopUpDisp["request_type"] == "pickup_request"
+              ? Column(
+                  mainAxisSize: MainAxisSize.min, // To make the card compact
+                  children: <Widget>[
+                    Text(
+                      "Order Update",
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Text(
+                      singlePopUpDisp['food'],
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          " to",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16.0, fontStyle: FontStyle.italic),
+                        ),
+                        Text(
+                          " Varun",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "In  ",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16.0, fontStyle: FontStyle.italic),
+                        ),
+                        Text(
+                          " Table - ${singlePopUpDisp['table']}",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "Collecting Counter :",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        Text(
+                          "  Counter 2",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 24.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        FlatButton(
+                          child: Text(
+                            "Reject",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          onPressed: () {
+                            sendStatus("rejected");
+                            Navigator.of(context).pop(); // To close the dialog
+                          },
+                        ),
+                        FlatButton(
+                          child: Text(
+                            "Accept",
+                            style: TextStyle(color: Colors.green),
+                          ),
+                          onPressed: () {
+                            sendStatus("accepted");
+                            Navigator.of(context).pop(); // To close the dialog
+                          },
+                        ),
+                      ],
+                    )
+                  ],
+                )
+
+              /////////////////////////////////for assistance request///////////////////////////
+              : Column(
+                  mainAxisSize: MainAxisSize.min, // To make the card compact
+                  children: <Widget>[
+                    Text(
+                      "Assistance Request",
+                      style: TextStyle(
+                        fontSize: 24.0,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Text(
+                      singlePopUpDisp['assistance_type'],
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          " to",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16.0, fontStyle: FontStyle.italic),
+                        ),
+                        Text(
+                          " Varun",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "In  ",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                              fontSize: 16.0, fontStyle: FontStyle.italic),
+                        ),
+                        Text(
+                          singlePopUpDisp['table'],
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          "Collecting Counter :",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 16.0,
+                          ),
+                        ),
+                        Text(
+                          "  Counter 2",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 18.0,
+                            fontWeight: FontWeight.w800,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 24.0),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: <Widget>[
+                        FlatButton(
+                          child: Text(
+                            "Reject",
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          onPressed: () {
+                            sendStatus("rejected");
+                            Navigator.of(context).pop(); // To close the dialog
+                          },
+                        ),
+                        FlatButton(
+                          child: Text(
+                            "Accept",
+                            style: TextStyle(color: Colors.green),
+                          ),
+                          onPressed: () {
+                            sendStatus("accepted");
+                            Navigator.of(context).pop(); // To close the dialog
+                          },
+                        ),
+                      ],
+                    )
+                  ],
                 ),
-              ),
-              SizedBox(height: 16.0),
-              Text(
-                singlePopUpDisp['food'],
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 18.0,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    " to",
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
-                  ),
-                  Text(
-                    " Varun",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "In  ",
-                    textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 16.0, fontStyle: FontStyle.italic),
-                  ),
-                  Text(
-                    " Table - ${singlePopUpDisp['table']}",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    "Collecting Counter :",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16.0,
-                    ),
-                  ),
-                  Text(
-                    "  Counter 2",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 18.0,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // To close the dialog
-                    },
-                    child: Text(
-                      "Reject",
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                  FlatButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // To close the dialog
-                    },
-                    child: Text(
-                      "Accept",
-                      style: TextStyle(color: Colors.green),
-                    ),
-                  ),
-                ],
-              )
-            ],
-          ),
         ),
       ),
     );

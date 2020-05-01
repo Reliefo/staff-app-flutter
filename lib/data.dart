@@ -1,9 +1,16 @@
 class NotificationData {
   String title;
   String body;
-  String data;
+  String table;
+  String itemOrType;
+  String counter;
+  String orderedBy;
+  String timestamp;
 
-  NotificationData({this.title, this.body, this.data});
+  NotificationData({
+    this.title,
+    this.body,
+  });
 
   NotificationData.fromJson(Map<String, dynamic> json) {
     print("here reciving data");
@@ -13,7 +20,7 @@ class NotificationData {
 
     body = json["notification"]["body"];
 
-    data = json["data"]["message"];
+//    data = json["data"]["message"];
   }
 }
 
@@ -311,7 +318,7 @@ class Tables {
 
   Tables.add(table) {
     oid = table['table_id'];
-    name = table['table_name'];
+    name = table['name'];
     seats = table['seats'];
   }
 
@@ -366,7 +373,7 @@ class Staff {
 
   Staff.addConfig(staff) {
     oid = staff['staff_id'];
-    name = staff['staff_name'];
+    name = staff['name'];
   }
 }
 
@@ -491,7 +498,7 @@ class MenuFoodItem {
 }
 
 class FoodOption {
-  Map<String, dynamic> options;
+  List<Map<String, dynamic>> options;
   List<String> choices;
 
   FoodOption({
@@ -501,7 +508,10 @@ class FoodOption {
 
   FoodOption.fromJson(Map<String, dynamic> json) {
     if (json['options'] != null) {
-      options = json['options'];
+      options = new List<Map<String, dynamic>>();
+      json['options'].forEach((option) {
+        options.add(option);
+      });
       //Todo: check
     }
 
@@ -538,9 +548,7 @@ class TableOrder {
     }
 
     if (json['table'] != null) {
-      RegExp regExp = new RegExp("[0-9]+");
-
-      table = regExp.firstMatch(json['table']).group(0);
+      table = json['table'];
     }
 
     if (json['table_id'] != null) {
@@ -764,8 +772,7 @@ class AssistanceRequest {
     }
 
     if (json['table'] != null) {
-      RegExp regExp = new RegExp("[0-9]+");
-      table = regExp.firstMatch(json['table']).group(0);
+      table = json['table'];
     }
   }
 }

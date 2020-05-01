@@ -157,28 +157,31 @@ class _ConnectionState extends State<Connection> {
 
     print(updateData);
 
-//        {notification: {}, data: {collapse_key: com.example.staffapp, google.original_priority: high,
-//    google.sent_time: 1587890037700,google.delivered_priority: high, google.ttl: 2419200, from: 363424798383,
-//    food_id: 5ea3150b6ce5015a86cff2fa,type: completed, click_action: FLUTTER_NOTIFICATION_CLICK,
-//    google.message_id: 0:1587890037712163%b2999812b2999812,
-//    order_id: 5ea5263a17290a2f0c8ef83a, table_order_id: 5ea5263a17290a2f0c8ef83b}}
-    String table;
+    String tableName;
     String foodName;
 
-    if (updateData['type'] == "completed") {
+    if (updateData['request_type'] == "pickup_request") {
+      print("here compl");
       restaurant.tableOrders.forEach((tableOrder) {
         if (tableOrder.oId == updateData['table_order_id']) {
-          table = tableOrder.table;
+          print(tableOrder.oId);
+          tableName = tableOrder.table;
           tableOrder.orders.forEach((order) {
             if (updateData['order_id'] == order.oId) {
               order.foodList.forEach((food) {
                 if (updateData['food_id'] == food.foodId) {
                   foodName = food.name;
-
+                  print("here");
                   setState(() {
                     popUpDisp.add({
-                      "table": table,
+                      "table": tableName,
                       "food": foodName,
+                      "timestamp": updateData["timestamp"],
+                      "request_type": updateData["request_type"],
+                      "food_id": updateData["food_id"],
+                      "type": updateData["type"],
+                      "order_id": updateData["order_id"],
+                      "table_order_id": updateData["table_order_id"],
                     });
                   });
                 }
@@ -188,9 +191,41 @@ class _ConnectionState extends State<Connection> {
         }
       });
     }
+
+    if (updateData["request_type"] == "assistance_request") {
+      restaurant.tables.forEach((table) {
+        if (table.oid == updateData["table_id"]) {
+          tableName = table.name;
+
+          setState(() {
+            popUpDisp.add({
+              "table": tableName,
+              "assistance_req_id": updateData["assistance_req_id"],
+              "table_id": updateData["table_id"],
+              "user_id": updateData["user_id"],
+              "assistance_type": updateData["assistance_type"],
+              "timestamp": updateData["timestamp"],
+              "request_type": updateData["request_type"],
+            });
+          });
+        }
+      });
+    }
+  }
+
+  requestStatusUpdate(localData) {
+    var encode;
+    String restaurantId = restaurant.restaurantId;
+
+    localData["data"]["restaurant_id"] = restaurantId;
+    localData["data"]["staff_id"] = restaurant.staff[2].oid;
+    localData["data"]["status"] = localData["status"];
+    encode = jsonEncode(localData["data"]);
+    sockets['working'].emit('staff_acceptance', [encode]);
   }
 
   updateRestaurant(data) {
+    print("restaurant fetch");
     setState(() {
       if (data is Map) {
         data = json.encode(data);
@@ -204,8 +239,6 @@ class _ConnectionState extends State<Connection> {
 
   @override
   Widget build(BuildContext context) {
-    print("jhksjdksjdls");
-    print(popUpDisp);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SafeArea(
@@ -213,6 +246,7 @@ class _ConnectionState extends State<Connection> {
           body: HomePage(
             notifications: notifications,
             popUpDisp: popUpDisp,
+            requestStatusUpdate: requestStatusUpdate,
           ),
         ),
       ),
