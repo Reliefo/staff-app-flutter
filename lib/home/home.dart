@@ -1,67 +1,63 @@
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
-import 'package:staffapp/data.dart';
 import 'package:staffapp/pop_up.dart';
 
 class HomePage extends StatelessWidget {
-  final List<NotificationData> notifications;
-  final List<Map<String, String>> popUpDisp;
+  final List<Map<String, dynamic>> notificationData;
   final requestStatusUpdate;
   HomePage({
-    this.notifications,
-    this.popUpDisp,
+    this.notificationData,
     this.requestStatusUpdate,
   });
+
+  showPopup(context, index) {
+    showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (BuildContext context) {
+          return PopUp(
+            notificationData: notificationData[index],
+            requestStatusUpdate: requestStatusUpdate,
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return popUpDisp.length != 0
+    return notificationData.length != 0
         ? Container(
             child: ListView.builder(
-              itemCount: popUpDisp.length,
+              itemCount: notificationData.length,
+//        itemCount: 4,
               itemBuilder: (context, index) {
-                return GestureDetector(
-                  child: Container(
-                    margin: EdgeInsets.all(8),
-                    padding: EdgeInsets.all(12),
-                    color: Colors.green,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                return Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  color: Colors.lightGreen,
+                  child: ListTile(
+                    title: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        popUpDisp[index]["request_type"] == "pickup_request"
-                            ? Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text("Order Update"),
-                                  Text("16:20"),
-                                ],
-                              )
-                            : Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: <Widget>[
-                                  Text("Assistance Request"),
-                                  Text("16:20"),
-                                ],
-                              ),
-//                  Row(
-//                    children: <Widget>[
-//                      Text("body: ${notifications[index].body}"),
-//                    ],
-//                  ),
+                        notificationData[index]["request_type"] ==
+                                "pickup_request"
+                            ? Text("Order Update")
+                            : Text("Assistance Request"),
+                        Text(
+                          '${formatDate(
+                                (DateTime.parse(
+                                  notificationData[index]["timestamp"],
+                                )),
+                                [HH, ':', nn],
+                              )}' ??
+                              " ",
+                        ),
                       ],
                     ),
+                    onTap: () {
+                      showPopup(context, index);
+                    },
                   ),
-                  onTap: () {
-                    showDialog(
-                        barrierDismissible: false,
-                        context: context,
-                        builder: (BuildContext context) {
-                          return PopUp(
-                            singlePopUpDisp: popUpDisp[index],
-                            requestStatusUpdate: requestStatusUpdate,
-                          );
-                        });
-                  },
                 );
               },
             ),

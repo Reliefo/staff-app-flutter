@@ -1,42 +1,39 @@
-class NotificationData {
-  String title;
-  String body;
-  String table;
-  String itemOrType;
-  String counter;
-  String orderedBy;
-  String timestamp;
-
-  NotificationData({
-    this.title,
-    this.body,
-  });
-
-  NotificationData.fromJson(Map<String, dynamic> json) {
-    print("here reciving data");
-    print(json);
-
-    title = json["notification"]["title"];
-
-    body = json["notification"]["body"];
-
-//    data = json["data"]["message"];
-  }
-}
-
-class Disp {
-  String food;
-  String table;
-
-  Disp({
-    this.food,
-    this.table,
-  });
-
-//  Disp.fromJson(Map<String, dynamic> json) {
+//class NotificationData {
+//  List<PickupNotification> pickupNotification;
+//  List<AssistanceNotification> assistanceNotification;
 //
+//  NotificationData({
+//    this.pickupNotification,
+//    this.assistanceNotification,
+//  });
+//
+//  NotificationData.fromJson(Map<String, dynamic> json) {
+//    print("here reciving data");
+//    print(json);
+//
+//    pickupNotification = json["notification"]["title"];
+//
+//    assistanceNotification = json["notification"]["body"];
 //  }
-}
+//}
+//
+////"table": tableName,
+////"food": foodName,
+////"timestamp": updateData["timestamp"],
+////"request_type": updateData["request_type"],
+////"food_id": updateData["food_id"],
+////"type": updateData["type"],
+////"order_id": updateData["order_id"],
+////"table_order_id": updateData["table_order_id"],
+//class PickupNotification {
+//  String foodName;
+//  String table;
+//  String pickupItem;
+//  String collectingCounter;
+//  String orderedBy;
+//  String timestamp;
+//  String requestType;
+//}
 
 class Restaurant {
   String oid;
@@ -333,18 +330,30 @@ class Tables {
   }
 }
 
+//I/flutter ( 4158): _id
+//I/flutter ( 4158): name
+//I/flutter ( 4158): requests_queue
+//I/flutter ( 4158): assistance_history
+//I/flutter ( 4158): rej_assistance_history
+//I/flutter ( 4158): order_history
+//I/flutter ( 4158): rej_order_history
+
 class Staff {
   String oid;
   String name;
-  //todo: update assistance history and order history
-//  List assistanceHistory;
-//  List orderHistory;
+  var requestsQueue;
+  List<AssistanceRequest> assistanceHistory;
+  List<AssistanceRequest> rejAssistanceHistory;
+  List<OrderHistory> orderHistory;
+  List<OrderHistory> rejOrderHistory;
 
   Staff({
     this.name,
     this.oid,
-//    this.assistanceHistory,
-//    this.orderHistory,
+    this.assistanceHistory,
+    this.orderHistory,
+    this.rejAssistanceHistory,
+    this.rejOrderHistory,
   });
 
   Staff.fromJson(Map<String, dynamic> json) {
@@ -356,11 +365,34 @@ class Staff {
       name = json['name'];
     }
 
-//    if (json['assistance_history'] != null) {
-//      //todo: add assistance History
+//    if (json['assistance_history'].isNotEmpty) {
+//      //todo:check
+//      assistanceHistory = new List<AssistanceRequest>();
+//      json['assistance_history'].forEach((v) {
+//        assistanceHistory.add(new AssistanceRequest.fromJson(v));
+//      });
+//    }
+//    if (json['rej_assistance_history'].isNotEmpty) {
+//      //todo:check
+//      rejAssistanceHistory = new List<AssistanceRequest>();
+//      json['rej_assistance_history'].forEach((v) {
+//        rejAssistanceHistory.add(new AssistanceRequest.fromJson(v));
+//      });
 //    }
 //    if (json['order_history'] != null) {
-//      //todo: add order History
+//      //todo:check
+//      orderHistory = new List<OrderHistory>();
+//      json['order_history'].forEach((v) {
+//        orderHistory.add(new OrderHistory.fromJson(v));
+//      });
+//    }
+//
+//    if (json['rej_order_history'] != null) {
+//      //todo:check
+//      rejOrderHistory = new List<OrderHistory>();
+//      json['rej_order_history'].forEach((v) {
+//        rejOrderHistory.add(new OrderHistory.fromJson(v));
+//      });
 //    }
   }
 
@@ -744,6 +776,7 @@ class AssistanceRequest {
   DateTime timeStamp;
   String acceptedBy; // directly provided by fetchAccepted() in main page
   String table;
+  String tableId;
 
   AssistanceRequest({
     this.oId,
@@ -752,6 +785,7 @@ class AssistanceRequest {
     this.timeStamp,
     this.acceptedBy,
     this.table,
+    this.tableId,
   });
 
   AssistanceRequest.fromJson(Map<String, dynamic> json) {
@@ -773,6 +807,41 @@ class AssistanceRequest {
 
     if (json['table'] != null) {
       table = json['table'];
+    }
+
+    if (json['table_id'] != null) {
+      table = json['table_id'];
+    }
+  }
+}
+
+class OrderHistory {
+  String tableOrderId;
+  String orderId;
+  String foodId;
+  DateTime timeStamp;
+
+  OrderHistory({
+    this.tableOrderId,
+    this.orderId,
+    this.foodId,
+    this.timeStamp,
+  });
+
+  OrderHistory.fromJson(Map<String, dynamic> json) {
+    print("order history");
+    if (json['table_order_id'] != null) {
+      tableOrderId = json['table_order_id'];
+    }
+    if (json['order_id'] != null) {
+      orderId = json['order_id'];
+    }
+
+    if (json['food_id'] != null) {
+      foodId = json['food_id'];
+    }
+    if (json['timestamp'] != null) {
+      timeStamp = DateTime.parse(json['timestamp']);
     }
   }
 }

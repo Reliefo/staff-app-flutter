@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class PopUp extends StatelessWidget {
-  final Map<String, String> singlePopUpDisp;
+  final Map<String, dynamic> notificationData;
   final requestStatusUpdate;
   PopUp({
-    this.singlePopUpDisp,
+    this.notificationData,
     this.requestStatusUpdate,
   });
 
   sendStatus(status) {
-    requestStatusUpdate({"status": status, "data": singlePopUpDisp});
+    requestStatusUpdate({"status": status, "data": notificationData});
   }
 
   @override
@@ -36,7 +36,7 @@ class PopUp extends StatelessWidget {
               ),
             ],
           ),
-          child: singlePopUpDisp["request_type"] == "pickup_request"
+          child: notificationData["request_type"] == "pickup_request"
               ? Column(
                   mainAxisSize: MainAxisSize.min, // To make the card compact
                   children: <Widget>[
@@ -49,7 +49,7 @@ class PopUp extends StatelessWidget {
                     ),
                     SizedBox(height: 16.0),
                     Text(
-                      singlePopUpDisp['food'],
+                      notificationData['food_name'],
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18.0,
@@ -87,7 +87,7 @@ class PopUp extends StatelessWidget {
                               fontSize: 16.0, fontStyle: FontStyle.italic),
                         ),
                         Text(
-                          " Table - ${singlePopUpDisp['table']}",
+                          " Table - ${notificationData['table']}",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
@@ -101,14 +101,14 @@ class PopUp extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Collecting Counter :",
+                          "Collecting Counter : ",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16.0,
                           ),
                         ),
                         Text(
-                          "  Counter 2",
+                          notificationData['kitchen_app_id'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
@@ -159,7 +159,7 @@ class PopUp extends StatelessWidget {
                     ),
                     SizedBox(height: 16.0),
                     Text(
-                      singlePopUpDisp['assistance_type'],
+                      notificationData['assistance_type'],
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 18.0,
@@ -197,7 +197,7 @@ class PopUp extends StatelessWidget {
                               fontSize: 16.0, fontStyle: FontStyle.italic),
                         ),
                         Text(
-                          singlePopUpDisp['table'],
+                          notificationData['table'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
@@ -211,14 +211,14 @@ class PopUp extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          "Collecting Counter :",
+                          "Collecting Counter  : ",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 16.0,
                           ),
                         ),
                         Text(
-                          "  Counter 2",
+                          "store room",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
