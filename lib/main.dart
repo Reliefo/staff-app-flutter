@@ -1,118 +1,97 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:staffapp/authentication/loadingPage.dart';
+import 'package:staffapp/authentication/loginPage.dart';
 import 'package:staffapp/connection.dart';
 
 void main() => runApp(MyApp());
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return Connection();
-  }
+  _MyAppState createState() => _MyAppState();
 }
 
-//
-//
-//
-//
-//
-//
-//import 'package:flutter/material.dart';
-//
-//void main() => runApp(MyApp());
-//
-//class MyApp extends StatelessWidget {
-//  @override
-//  Widget build(BuildContext context) {
-//    return MaterialApp(
-//      debugShowCheckedModeBanner: false,
-//      title: 'Flutter Demo',
-//      theme: ThemeData(
-//        primarySwatch: Colors.blue,
-//      ),
-//      home: MyHomePage(),
-//    );
-//  }
-//}
-////
-//class MyHomePage extends StatefulWidget {
-//  @override
-//  _MyHomePageState createState() => _MyHomePageState();
-//}
-//
-//class _MyHomePageState extends State<MyHomePage> {
-//  TextStyle style = TextStyle(fontFamily: 'Montserrat', fontSize: 20.0);
-//
-//  @override
-//  Widget build(BuildContext context) {
-//    final emailField = TextField(
-//      obscureText: true,
-//      style: style,
-//      decoration: InputDecoration(
-//          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-//          hintText: "Email",
-//          border:
-//              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
-//    );
-//
-//    final passwordField = TextField(
-//      obscureText: true,
-//      style: style,
-//      decoration: InputDecoration(
-//          contentPadding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-//          hintText: "Password",
-//          border:
-//              OutlineInputBorder(borderRadius: BorderRadius.circular(32.0))),
-//    );
-//
-//    final loginButton = Material(
-//      elevation: 5.0,
-//      borderRadius: BorderRadius.circular(30.0),
-//      color: Color(0xff01A0C7),
-//      child: MaterialButton(
-//        minWidth: MediaQuery.of(context).size.width,
-//        padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
-//        onPressed: () {},
-//        child: Text("Login",
-//            textAlign: TextAlign.center,
-//            style: style.copyWith(
-//                color: Colors.white, fontWeight: FontWeight.bold)),
-//      ),
-//    );
-//
-//    return Scaffold(
-//        body: SingleChildScrollView(
-//      child: Center(
-//        child: Container(
-//          color: Colors.white,
-//          child: Padding(
-//            padding: const EdgeInsets.all(36.0),
-//            child: Column(
-//              crossAxisAlignment: CrossAxisAlignment.center,
-//              mainAxisAlignment: MainAxisAlignment.center,
-//              children: <Widget>[
-//                SizedBox(
-//                  height: 155.0,
-//                  child: Image.network(
-//                    "http://pngimg.com/uploads/cannabis/cannabis_PNG75.png",
-//                    fit: BoxFit.contain,
-//                  ),
-//                ),
-//                SizedBox(height: 45.0),
-//                emailField,
-//                SizedBox(height: 25.0),
-//                passwordField,
-//                SizedBox(
-//                  height: 35.0,
-//                ),
-//                loginButton,
-//                SizedBox(
-//                  height: 15.0,
-//                ),
-//              ],
-//            ),
-//          ),
-//        ),
-//      ),
-//    ));
-//  }
-//}
+class _MyAppState extends State<MyApp> {
+  bool authentication = false;
+  bool showLoading = true;
+  String accessToken;
+  String restaurantId;
+  String staffId;
+  Future<Map<String, dynamic>> _getSavedData() async {
+    print("getData");
+    final token = await SharedPreferences.getInstance();
+    final credentials = await SharedPreferences.getInstance();
+
+    final restaurantId = credentials.getString('restaurantId');
+    final staffId = credentials.getString('staffId');
+//    final jwt = token.getString('jwt');
+    final refreshToken = token.getString('refreshToken');
+
+    Map<String, dynamic> savedData = {
+      "restaurantId": restaurantId,
+      "staffId": staffId,
+//      "jwt": jwt,
+      "refreshToken": refreshToken
+    };
+
+    print(savedData);
+
+    return savedData;
+  }
+
+  refresh() async {
+    var savedData = await _getSavedData();
+
+    setState(() {
+      restaurantId = savedData["restaurantId"];
+      staffId = savedData["staffId"];
+    });
+    String url = "http://192.168.0.9:5050/refresh";
+    Map<String, String> headers = {
+      "Authorization": "Bearer ${savedData["refreshToken"]}"
+    };
+    print("headers $headers");
+    http.Response response = await http.post(url, headers: headers);
+
+    int statusCode = response.statusCode;
+    // this API passes back the id of the new item added to the body
+    var decoded = json.decode(response.body);
+    print("status in main page code");
+    print(decoded);
+    print(statusCode);
+    if (statusCode == 200) {
+      setState(() {
+        accessToken = decoded["access_token"];
+        showLoading = false;
+        authentication = true;
+      });
+    } else {
+      authentication = false;
+      showLoading = false;
+    }
+  }
+
+  @override
+  void initState() {
+    refresh();
+
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    print("here build method");
+    return showLoading == true
+        ? LoadingPage()
+        : authentication == true
+            ? Connection(
+                jwt: accessToken,
+                staffId: staffId,
+                restaurantId: restaurantId,
+              )
+            : LoginPage();
+  }
+}

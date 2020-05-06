@@ -10,7 +10,7 @@ class AssignedTables extends StatelessWidget {
   getAssignedTables() {
     restaurant.tables.forEach((table) {
       table.staff.forEach((staff) {
-        if (staff.oid == "id") {
+        if (staff.oid == "5ead65e1e1823a4f213257ab") {
           assignedTables.add(table);
         }
       });

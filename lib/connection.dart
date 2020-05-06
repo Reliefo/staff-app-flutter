@@ -3,12 +3,20 @@ import 'dart:convert';
 import 'package:adhara_socket_io/adhara_socket_io.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:staffapp/authentication/session.dart';
 import 'package:staffapp/data.dart';
 import 'package:staffapp/drawer/drawerMenu.dart';
 import 'package:staffapp/home/home.dart';
-import 'package:staffapp/session.dart';
 
 class Connection extends StatefulWidget {
+  final String jwt;
+  final String staffId;
+  final String restaurantId;
+  Connection({
+    this.jwt,
+    this.staffId,
+    this.restaurantId,
+  });
   @override
   _ConnectionState createState() => _ConnectionState();
 }
@@ -26,6 +34,7 @@ class _ConnectionState extends State<Connection> {
   Map<String, SocketIO> sockets = {};
 
   List<Map<String, dynamic>> notificationData = [];
+  List<Map<String, dynamic>> history = [];
 
   Restaurant restaurant = Restaurant();
   final FirebaseMessaging _messaging = new FirebaseMessaging();
@@ -34,7 +43,8 @@ class _ConnectionState extends State<Connection> {
   void initState() {
     manager = SocketIOManager();
     loginSession = new Session();
-    login();
+//    login();
+    initSocket(uri);
     printToken();
     configureFirebaseListeners();
     super.initState();
@@ -53,7 +63,7 @@ class _ConnectionState extends State<Connection> {
       onMessage: (Map<String, dynamic> message) async {
         if (i % 2 == 0) {
           print('on message $message');
-          fetchOrderUpdates(message);
+          fetchRequests(message);
           // something else you wanna execute
         }
         i++;
@@ -61,24 +71,24 @@ class _ConnectionState extends State<Connection> {
       onResume: (Map<String, dynamic> message) async {
         if (i % 2 == 0) {
           print('on resume $message');
-          fetchOrderUpdates(message);
+          fetchRequests(message);
         }
         i++;
       },
       onLaunch: (Map<String, dynamic> message) async {
         print('on launch $message');
-        fetchOrderUpdates(message);
+        fetchRequests(message);
       },
     );
   }
 
-  login() async {
-    var output = await loginSession
-        .post(loginUri, {"username": "SID001", "password": "password123"});
-    print("I am loggin in ");
-    initSocket(uri);
-    print(output);
-  }
+//  login() async {
+//    var output = await loginSession
+//        .post(loginUri, {"username": "SID001", "password": "password123"});
+//    print("I am loggin in ");
+//    initSocket(uri);
+//    print(output);
+//  }
 
   initSocket(uri) async {
     print('hey');
@@ -91,7 +101,7 @@ class _ConnectionState extends State<Connection> {
         nameSpace: "/reliefo",
         //Query params - can be used for authentication
         query: {
-          "jwt": loginSession.jwt,
+          "jwt": widget.jwt,
 //          "username": loginSession.username,
           "info": "new connection from adhara-socketio",
           "timestamp": DateTime.now().toString()
@@ -109,13 +119,10 @@ class _ConnectionState extends State<Connection> {
 //      pprint(data);
 //      sendMessage("DEFAULT");
       socket.emit("fetch_handshake", ["Hello world!"]);
-//      String fetchStaffDetails = jsonEncode(
-//          {"staff_id": restaurant.staff[2].oid, "restaurant_id": "BNGHSR0001"});
+
       socket.emit("fetch_staff_details", [
-        jsonEncode({
-          "staff_id": "5ead65e1e1823a4f213257ab",
-          "restaurant_id": "BNGHSR0001"
-        })
+        jsonEncode(
+            {"staff_id": widget.staffId, "restaurant_id": widget.restaurantId})
       ]);
     });
 
@@ -131,6 +138,10 @@ class _ConnectionState extends State<Connection> {
 
     socket.on("restaurant_object", (data) => updateRestaurant(data));
     socket.on("staff_details", (data) => fetchInitialData(data));
+    socket.on("assist", (data) => fetchRequestStatus(data));
+    socket.on("order_updates", (data) => fetchRequestStatus(data));
+
+//    ""
 
     socket.connect();
     sockets[identifier] = socket;
@@ -150,6 +161,8 @@ class _ConnectionState extends State<Connection> {
       if (data is Map) {
         data = json.encode(data);
       }
+
+      print("prksnk");
       print(data);
     });
   }
@@ -161,14 +174,56 @@ class _ConnectionState extends State<Connection> {
     }
 
     print("initial decoded data");
-
+//I/flutter ( 4158): _id
+//I/flutter ( 4158): name
+//I/flutter ( 4158): requests_queue
+//I/flutter ( 4158): assistance_history
+//I/flutter ( 4158): rej_assistance_history
+//I/flutter ( 4158): order_history
+//I/flutter ( 4158): rej_order_history
     var decoded = jsonDecode(data);
     decoded['requests_queue'].forEach((v) {
-      fetchOrderUpdates({"data": v});
+      fetchRequests({"data": v});
+    });
+
+    decoded['assistance_history'].forEach((v) {
+      print("assistance_history");
+      print(v);
+      fetchHistory(v);
+    });
+
+    decoded['rej_assistance_history'].forEach((v) {
+      print("rej_assistance_history");
+      print(v);
+      fetchHistory(v);
+    });
+    decoded['order_history'].forEach((v) {
+      print("order_history");
+      print(v);
+      fetchHistory(v);
+    });
+    decoded['rej_order_history'].forEach((v) {
+      print("rej_order_history");
+      print(v);
+      fetchHistory(v);
     });
   }
 
-  fetchOrderUpdates(data) {
+  fetchHistory(data) {
+//    print("inside History");
+
+    Map<String, dynamic> updateData = {};
+
+    data.forEach((k, v) => updateData[k.toString()] = v);
+
+//    print(updateData);
+
+    setState(() {
+      history.add(updateData);
+    });
+  }
+
+  fetchRequests(data) {
     print("inside fetchOrderUpdates");
 
     Map<String, dynamic> updateData = {};
@@ -177,22 +232,9 @@ class _ConnectionState extends State<Connection> {
 
     print(updateData);
 
-    if (updateData['request_type'] == "pickup_request") {
-      print("here compl");
-      setState(() {
-        notificationData.add(updateData);
-      });
-    }
-//    {assistance_req_id: 5eafa7a301ccfd3da8c6c1ff, table_id: 5ead65c8e1823a4f2132579c,
-//    user_id: 5eaf03840e993a2a64fcdf95, timestamp: 2020-05-04 10:56:59.773610,
-//    click_action: FLUTTER_NOTIFICATION_CLICK, request_type: assistance_request,
-//    assistance_type: ketchup}
-    if (updateData["request_type"] == "assistance_request") {
-      print("comingj");
-      setState(() {
-        notificationData.add(updateData);
-      });
-    }
+    setState(() {
+      notificationData.add(updateData);
+    });
   }
 //  fetchOrderUpdates(data) {
 //    print("inside fetchOrderUpdates");
@@ -253,6 +295,44 @@ class _ConnectionState extends State<Connection> {
 //    }
 //  }
 
+  fetchRequestStatus(data) {
+    if (data is Map) {
+      data = json.encode(data);
+    }
+
+    print("updated status");
+
+    var decoded = jsonDecode(data);
+    print(decoded);
+
+    if (decoded["request_type"] == "pickup_request") {
+      notificationData.forEach((notification) {
+        if (notification["request_type"] == "pickup_request") {
+          if (decoded["order_id"] == notification["order_id"] &&
+              decoded["food_id"] == notification["food_id"]) {
+            setState(() {
+              history.add(notification);
+              notificationData.remove(notification);
+            });
+          }
+        }
+      });
+    }
+    if (decoded["request_type"] == "assistance_request") {
+      notificationData.forEach((notification) {
+        if (notification["request_type"] == "assistance_request") {
+          if (decoded["assistance_req_id"] ==
+              notification["assistance_req_id"]) {
+            setState(() {
+              history.add(notification);
+              notificationData.remove(notification);
+            });
+          }
+        }
+      });
+    }
+  }
+
   requestStatusUpdate(localData) {
     var encode;
     String restaurantId = restaurant.restaurantId;
@@ -283,7 +363,9 @@ class _ConnectionState extends State<Connection> {
 //  click_action: FLUTTER_NOTIFICATION_CLICK, request_type: assistance_request, assistance_type: help}}
   @override
   Widget build(BuildContext context) {
-//    print(restaurant.tables);
+    print("conn page");
+    print(widget.restaurantId);
+    print(widget.staffId);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: SafeArea(
@@ -293,13 +375,17 @@ class _ConnectionState extends State<Connection> {
               restaurant: restaurant,
             ),
           ),
-          appBar: AppBar(
-            title: Text("Home"),
-          ),
-          body: HomePage(
+          body:
+//          PageView(
+//            children: <Widget>[
+              HomePage(
             notificationData: notificationData,
+            history: history,
             requestStatusUpdate: requestStatusUpdate,
           ),
+//              HistoryPage(),
+//            ],
+//          ),
         ),
       ),
     );

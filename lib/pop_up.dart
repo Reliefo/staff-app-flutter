@@ -67,7 +67,7 @@ class PopUp extends StatelessWidget {
                               fontSize: 16.0, fontStyle: FontStyle.italic),
                         ),
                         Text(
-                          " Varun",
+                          notificationData['user'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
@@ -177,7 +177,7 @@ class PopUp extends StatelessWidget {
                               fontSize: 16.0, fontStyle: FontStyle.italic),
                         ),
                         Text(
-                          " Varun",
+                          notificationData['user'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
