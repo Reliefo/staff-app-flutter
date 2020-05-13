@@ -3,14 +3,16 @@ import 'package:staffapp/data.dart';
 
 class AssignedTables extends StatelessWidget {
   final Restaurant restaurant;
+  final String staffId;
   final List<Tables> assignedTables = [];
   AssignedTables({
     this.restaurant,
+    this.staffId,
   });
   getAssignedTables() {
     restaurant.tables.forEach((table) {
       table.staff.forEach((staff) {
-        if (staff.oid == "5ead65e1e1823a4f213257ab") {
+        if (staff.oid == staffId) {
           assignedTables.add(table);
         }
       });

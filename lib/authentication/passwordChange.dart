@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:staffapp/authentication/loginPage.dart';
+import 'package:staffapp/url.dart';
 
 class PasswordChange extends StatefulWidget {
   final String username, password;
@@ -13,6 +14,7 @@ class PasswordChange extends StatefulWidget {
 }
 
 class _PasswordChangeState extends State<PasswordChange> {
+//  String passChangeUrl = "http://192.168.0.9:5050/change_password";
   GlobalKey<FormState> _key = new GlobalKey();
   final TextEditingController _pass = TextEditingController();
   bool _validate = false;
@@ -134,7 +136,8 @@ class _PasswordChangeState extends State<PasswordChange> {
       print("Password : $newPassword");
       print("Confirm Password : $confirmPassword");
 
-      _makePostRequest(widget.username, widget.password, newPassword);
+      _makePostRequest(
+          passChangeUrl, widget.username, widget.password, newPassword);
     } else {
       // validation error
       setState(() {
@@ -143,10 +146,10 @@ class _PasswordChangeState extends State<PasswordChange> {
     }
   }
 
-  _makePostRequest(
-      String username, String oldPassword, String newPassword) async {
+  _makePostRequest(String url, String username, String oldPassword,
+      String newPassword) async {
     // set up POST request arguments
-    String url = "http://192.168.0.9:5050/change_password";
+
 //    Map<String, String> headers = {"Content-type": "application/json"};
     Map<String, dynamic> json = {
       "username": username,

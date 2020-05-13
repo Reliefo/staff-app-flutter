@@ -3,9 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:staffapp/authentication/connection.dart';
 import 'package:staffapp/authentication/loadingPage.dart';
 import 'package:staffapp/authentication/loginPage.dart';
-import 'package:staffapp/connection.dart';
+import 'package:staffapp/url.dart';
 
 void main() => runApp(MyApp());
 
@@ -15,6 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+//  String refreshUrl = "http://192.168.0.9:5050/refresh";
   bool authentication = false;
   bool showLoading = true;
   String accessToken;
@@ -22,13 +24,12 @@ class _MyAppState extends State<MyApp> {
   String staffId;
   Future<Map<String, dynamic>> _getSavedData() async {
     print("getData");
-    final token = await SharedPreferences.getInstance();
+
     final credentials = await SharedPreferences.getInstance();
 
     final restaurantId = credentials.getString('restaurantId');
     final staffId = credentials.getString('staffId');
-//    final jwt = token.getString('jwt');
-    final refreshToken = token.getString('refreshToken');
+    final refreshToken = credentials.getString('refreshToken');
 
     Map<String, dynamic> savedData = {
       "restaurantId": restaurantId,
@@ -42,14 +43,14 @@ class _MyAppState extends State<MyApp> {
     return savedData;
   }
 
-  refresh() async {
+  refresh(url) async {
     var savedData = await _getSavedData();
 
     setState(() {
       restaurantId = savedData["restaurantId"];
       staffId = savedData["staffId"];
     });
-    String url = "http://192.168.0.9:5050/refresh";
+
     Map<String, String> headers = {
       "Authorization": "Bearer ${savedData["refreshToken"]}"
     };
@@ -69,14 +70,16 @@ class _MyAppState extends State<MyApp> {
         authentication = true;
       });
     } else {
-      authentication = false;
-      showLoading = false;
+      setState(() {
+        authentication = false;
+        showLoading = false;
+      });
     }
   }
 
   @override
   void initState() {
-    refresh();
+    refresh(refreshUrl);
 
     super.initState();
   }
@@ -84,6 +87,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     print("here build method");
+    print(refreshUrl);
     return showLoading == true
         ? LoadingPage()
         : authentication == true

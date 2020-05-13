@@ -1,4 +1,4 @@
-package com.example.staffapp
+package com.liqr.staffapp
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

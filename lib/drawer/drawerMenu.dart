@@ -4,15 +4,23 @@ import 'package:staffapp/drawer/assignedTables.dart';
 
 class DrawerMenu extends StatelessWidget {
   final Restaurant restaurant;
+  final String staffName;
+  final String staffId;
   DrawerMenu({
     this.restaurant,
+    this.staffName,
+    this.staffId,
   });
   @override
   Widget build(BuildContext context) {
     return ListView(
       children: <Widget>[
         DrawerHeader(
-          child: Container(),
+          child: Container(
+            child: Center(
+              child: Text("Hey ! $staffName "),
+            ),
+          ),
         ),
 
         FlatButton(
@@ -20,11 +28,13 @@ class DrawerMenu extends StatelessWidget {
             child: Text('Assigned Tables'),
           ),
           onPressed: () {
+            Navigator.of(context).pop();
             Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => AssignedTables(
                   restaurant: restaurant,
+                  staffId: staffId,
                 ),
               ),
             );

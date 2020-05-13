@@ -61,7 +61,7 @@ class PopUp extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          " to",
+                          "to  ",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 16.0, fontStyle: FontStyle.italic),
@@ -108,7 +108,8 @@ class PopUp extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          notificationData['kitchen_app_id'],
+                          "Kitchen",
+//                          notificationData['kitchen_app_id'],
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 18.0,
@@ -171,7 +172,7 @@ class PopUp extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Text(
-                          " to",
+                          "to  ",
                           textAlign: TextAlign.center,
                           style: TextStyle(
                               fontSize: 16.0, fontStyle: FontStyle.italic),

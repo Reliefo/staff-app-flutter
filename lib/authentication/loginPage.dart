@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:staffapp/authentication/connection.dart';
 import 'package:staffapp/authentication/passwordChange.dart';
-import 'package:staffapp/connection.dart';
+import 'package:staffapp/url.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -13,11 +15,30 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+//  String loginUrl = "http://192.168.0.9:5050/login";
+
+  final FirebaseMessaging _messaging = new FirebaseMessaging();
   GlobalKey<FormState> _key = new GlobalKey();
   bool _validate = false;
-  String username, password;
+  String username, password, deviceToken;
   String jwt, refreshToken, staffId, restaurantId;
   int responseCode;
+
+  getDeviceToken() {
+    _messaging.getToken().then((token) {
+      setState(() {
+        deviceToken = token;
+      });
+      print("Device token:   $token");
+    });
+  }
+
+  @override
+  void initState() {
+    getDeviceToken();
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,10 +77,20 @@ class _LoginPageState extends State<LoginPage> {
       children: <Widget>[
         SizedBox(
           height: 150.0,
-          child: Image.network(
-            "http://pngimg.com/uploads/cannabis/cannabis_PNG75.png",
-            fit: BoxFit.contain,
-          ),
+          child: Center(
+              child: Text(
+            'LiQR',
+            style: TextStyle(
+              fontSize: 70,
+              fontWeight: FontWeight.w800,
+              letterSpacing: 4,
+            ),
+          )),
+
+//          Image.network(
+//            "http://pngimg.com/uploads/cannabis/cannabis_PNG75.png",
+//            fit: BoxFit.contain,
+//          ),
         ),
         TextFormField(
           decoration: InputDecoration(
@@ -162,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
       print("Username $username");
       print("Password $password");
 
-      _makePostRequest(username, password);
+      _makePostRequest(loginUrl, username, password);
     } else {
       // validation error
       setState(() {
@@ -171,11 +202,14 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  _makePostRequest(String username, String password) async {
-    // set up POST request arguments
-    String url = "http://192.168.0.9:5050/login";
+  _makePostRequest(String url, username, String password) async {
 //    Map<String, String> headers = {"Content-type": "application/json"};
-    Map<String, dynamic> data = {"username": username, "password": password};
+    Map<String, dynamic> data = {
+      "username": username,
+      "password": password,
+      "device_token": deviceToken,
+      "app": "staff",
+    };
     // make POST request
     print("json $data");
     http.Response response = await http.post(url, body: data);
