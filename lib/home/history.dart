@@ -1,5 +1,6 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:staffapp/constants.dart';
 
 class History extends StatefulWidget {
   final List<Map<String, dynamic>> history;
@@ -115,8 +116,8 @@ class _HistoryState extends State<History> {
             itemBuilder: (context, index) {
               return Card(
                 color: widget.history[index]["status"] == "accepted"
-                    ? Colors.greenAccent
-                    : Colors.redAccent,
+                    ? Color(0xffEDFBF0)
+                    : Color(0xffF8ECEA),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -128,7 +129,10 @@ class _HistoryState extends State<History> {
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text("Order Pickup"),
+                              Text(
+                                "Order Pickup",
+                                style: kTitleStyle,
+                              ),
                               Text(
                                 '${formatDate(
                                       (DateTime.parse(
@@ -137,6 +141,7 @@ class _HistoryState extends State<History> {
                                       [HH, ':', nn],
                                     )}' ??
                                     " ",
+                                style: kTitleStyle,
                               ),
                             ],
                           ),
@@ -144,13 +149,20 @@ class _HistoryState extends State<History> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               SizedBox(height: 6),
-                              Text("Table : ${widget.history[index]["table"]}"),
+                              Text(
+                                "Table : ${widget.history[index]["table"]}",
+                                style: kSubTitleStyle,
+                              ),
                               SizedBox(height: 4),
                               Text(
-                                  "Food : ${widget.history[index]["food_name"]}"),
+                                "Food : ${widget.history[index]["food_name"]}",
+                                style: kSubTitleStyle,
+                              ),
                               SizedBox(height: 4),
                               Text(
-                                  "Status : ${widget.history[index]["status"]}"),
+                                "Status : ${widget.history[index]["status"]}",
+                                style: kSubTitleStyle,
+                              ),
                             ],
                           ),
                           onTap: () {
@@ -163,7 +175,10 @@ class _HistoryState extends State<History> {
                           title: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              Text("Assistance Request"),
+                              Text(
+                                "Assistance Request",
+                                style: kTitleStyle,
+                              ),
                               Text(
                                 '${formatDate(
                                       (DateTime.parse(
@@ -172,6 +187,7 @@ class _HistoryState extends State<History> {
                                       [HH, ':', nn],
                                     )}' ??
                                     " ",
+                                style: kTitleStyle,
                               ),
                             ],
                           ),
@@ -179,13 +195,20 @@ class _HistoryState extends State<History> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               SizedBox(height: 6),
-                              Text("Table : ${widget.history[index]["table"]}"),
+                              Text(
+                                "Table : ${widget.history[index]["table"]}",
+                                style: kSubTitleStyle,
+                              ),
                               SizedBox(height: 4),
                               Text(
-                                  "Type : ${widget.history[index]["assistance_type"]}"),
+                                "Type : ${widget.history[index]["assistance_type"]}",
+                                style: kSubTitleStyle,
+                              ),
                               SizedBox(height: 4),
                               Text(
-                                  "Status : ${widget.history[index]["status"]}"),
+                                "Status : ${widget.history[index]["status"]}",
+                                style: kSubTitleStyle,
+                              ),
                             ],
                           ),
                           onTap: () {

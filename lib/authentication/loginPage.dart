@@ -15,15 +15,13 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-//  String loginUrl = "http://192.168.0.9:5050/login";
-
   final FirebaseMessaging _messaging = new FirebaseMessaging();
   GlobalKey<FormState> _key = new GlobalKey();
   bool _validate = false;
   String username, password, deviceToken;
   String jwt, refreshToken, staffId, restaurantId;
   int responseCode;
-
+  String responseFromBackend;
   getDeviceToken() {
     _messaging.getToken().then((token) {
       setState(() {
@@ -121,6 +119,13 @@ class _LoginPageState extends State<LoginPage> {
           },
         ),
         SizedBox(height: 15.0),
+        responseFromBackend != null
+            ? Text(responseFromBackend)
+            : Container(
+                height: 0,
+                width: 0,
+              ),
+        SizedBox(height: 15.0),
         RaisedButton(
           onPressed: _sendToServer,
           child: Text('Login'),
@@ -140,24 +145,15 @@ class _LoginPageState extends State<LoginPage> {
     return null;
   }
 
-//  Future<void> _saveData() async {
-//    final credentials = await SharedPreferences.getInstance();
-//    String usernameToSave = username.toString();
-//    String passwordToSave = password.toString();
-//    await credentials.setString('username', usernameToSave);
-//    await credentials.setString('password', passwordToSave);
-//
-//    print("Saved credentials to storage");
-//  }
-
   Future<void> _saveData() async {
     final data = await SharedPreferences.getInstance();
-
-    String jwtToSave = jwt.toString();
+//    String jwtToSave = jwt.toString();
+    String deviceTokenToSave = deviceToken.toString();
     String refreshTokenToSave = refreshToken.toString();
     String staffIdToSave = staffId.toString();
     String restaurantIdToSave = restaurantId.toString();
-    await data.setString('jwt', jwtToSave);
+    //    await data.setString('jwt', jwtToSave);
+    await data.setString('deviceToken', deviceTokenToSave);
     await data.setString('refreshToken', refreshTokenToSave);
     await data.setString('staffId', staffIdToSave);
     await data.setString('restaurantId', restaurantIdToSave);
@@ -230,6 +226,10 @@ class _LoginPageState extends State<LoginPage> {
       });
 
       _saveData();
+    } else {
+      setState(() {
+        responseFromBackend = decoded["status"];
+      });
     }
 // 201 for temp password Matched successfully
     // 200 for original password Matched successfully

@@ -74,13 +74,14 @@ class Restaurant {
     }
 
     //todo: add restaurant address if present
+
+    print("hhjhk");
     if (json['food_menu'].isNotEmpty) {
       foodMenu = new List<Category>();
       json['food_menu'].forEach((v) {
         foodMenu.add(new Category.fromJson(v));
       });
     }
-
 //    print(json['bar_menu']);
     if (json['bar_menu'].isNotEmpty) {
       barMenu = new List<Category>();
@@ -88,6 +89,7 @@ class Restaurant {
         barMenu.add(new Category.fromJson(v));
       });
     }
+    print("hhjhk 333");
 
     if (json['staff'].isNotEmpty) {
       staff = new List<Staff>();
@@ -105,6 +107,7 @@ class Restaurant {
         );
       });
     }
+    print("hhjhk klk");
 
     if (json['table_orders'].isNotEmpty) {
       tableOrders = new List<TableOrder>();
@@ -112,6 +115,7 @@ class Restaurant {
         tableOrders.add(new TableOrder.fromJson(v));
       });
     }
+    print("hhjhk dffg");
 
     if (json['assistance_reqs'].isNotEmpty) {
       assistanceRequests = new List<AssistanceRequest>();
@@ -709,17 +713,17 @@ class FoodItem {
   String instructions;
   int quantity;
   String status;
-  FoodOption foodOption;
+  List<String> customization;
 
-  FoodItem({
-    this.foodId,
-    this.name,
-    this.description,
-    this.price,
-    this.instructions,
-    this.quantity,
-    this.status,
-  });
+  FoodItem(
+      {this.foodId,
+      this.name,
+      this.description,
+      this.price,
+      this.instructions,
+      this.quantity,
+      this.status,
+      this.customization});
 
   FoodItem.fromJson(Map<String, dynamic> json) {
     if (json['food_id'] != null) {
@@ -750,9 +754,34 @@ class FoodItem {
       status = json['status'];
     }
 
-    if (json['food_options'] != null) {
-      foodOption = new FoodOption.fromJson(json['food_options']);
+    if (json['customization'] != null) {
+      customization = new List<String>();
+      json['customization']?.forEach((custom) {
+        if (custom['customization_type'] == 'choices') {
+          custom['list_of_options']?.forEach((choice) {
+            customization.add(choice);
+          });
+        }
+        if (custom['customization_type'] == 'options') {
+          print("hey");
+        }
+        if (custom['customization_type'] == 'add_ons') {
+          custom['list_of_options']?.forEach((addOn) {
+            customization.add(addOn['name']);
+          });
+        }
+      });
     }
+  }
+
+  FoodItem.addMenuFoodItem(MenuFoodItem foodItem) {
+    //todo: take instruction and quantity
+
+    this.foodId = foodItem.oid;
+    this.name = foodItem.name;
+    this.description = foodItem.description;
+    this.price = foodItem.price;
+    this.quantity = 1;
   }
 
   Map<String, dynamic> toJson() {
@@ -770,47 +799,65 @@ class FoodItem {
 // class for assistance requests
 
 class AssistanceRequest {
-  String oId;
-  String user;
-  String assistanceType;
-  DateTime timeStamp;
-  String acceptedBy; // directly provided by fetchAccepted() in main page
   String table;
   String tableId;
+  String assistanceType;
+  DateTime timeStamp;
+  Map<String, String> acceptedBy;
+  String userId;
+  String user;
+  String assistanceReqId;
+  String requestType;
+  String status;
 
   AssistanceRequest({
-    this.oId,
-    this.user,
+    this.table,
+    this.tableId,
     this.assistanceType,
     this.timeStamp,
     this.acceptedBy,
-    this.table,
-    this.tableId,
+    this.userId,
+    this.user,
+    this.assistanceReqId,
+    this.requestType,
+    this.status,
   });
 
   AssistanceRequest.fromJson(Map<String, dynamic> json) {
-    if (json['_id']['\$oid'] != null) {
-      oId = json['_id']['\$oid'];
-    }
-
-    if (json['user']['\$oid'] != null) {
-      user = json['user']['\$oid'];
-    }
-
-    if (json['assistance_type'] != null) {
-      assistanceType = json['assistance_type'];
-    }
-
-    if (json['timestamp'] != null) {
-      timeStamp = DateTime.parse(json['timestamp']);
-    }
-
     if (json['table'] != null) {
       table = json['table'];
     }
-
     if (json['table_id'] != null) {
-      table = json['table_id'];
+      tableId = json['table_id'];
+    }
+    if (json['assistance_type'] != null) {
+      assistanceType = json['assistance_type'];
+    }
+    if (json['timestamp'] != null) {
+      timeStamp = DateTime.parse(json['timestamp']);
+    }
+//    print("while adding");
+    if (json['accepted_by'].isNotEmpty) {
+      acceptedBy = {
+        "staff_name": json['accepted_by']['staff_name'],
+        "staff_id": json['accepted_by']['staff_id']
+      };
+    }
+//    print("while adding 1");
+    if (json['user_id'] != null) {
+      userId = json['user_id'];
+    }
+    if (json['user'] != null) {
+      user = json['user'];
+    }
+    if (json['assistance_req_id'] != null) {
+      assistanceReqId = json['assistance_req_id'];
+    }
+    if (json['request_type'] != null) {
+      requestType = json['request_type'];
+    }
+    if (json['status'] != null) {
+      status = json['status'];
     }
   }
 }

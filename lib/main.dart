@@ -17,8 +17,10 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
 //  String refreshUrl = "http://192.168.0.9:5050/refresh";
+
   bool authentication = false;
   bool showLoading = true;
+  String deviceToken;
   String accessToken;
   String restaurantId;
   String staffId;
@@ -27,6 +29,7 @@ class _MyAppState extends State<MyApp> {
 
     final credentials = await SharedPreferences.getInstance();
 
+    final deviceToken = credentials.getString('deviceToken');
     final restaurantId = credentials.getString('restaurantId');
     final staffId = credentials.getString('staffId');
     final refreshToken = credentials.getString('refreshToken');
@@ -35,12 +38,31 @@ class _MyAppState extends State<MyApp> {
       "restaurantId": restaurantId,
       "staffId": staffId,
 //      "jwt": jwt,
-      "refreshToken": refreshToken
+      "refreshToken": refreshToken,
+      "deviceToken": deviceToken
     };
 
     print(savedData);
 
     return savedData;
+  }
+
+  checkRefresh() async {
+    var savedData = await _getSavedData();
+
+    print("Saved Device token : ${savedData["deviceToken"]} ");
+    print("Saved Refresh token : ${savedData["refreshToken"]} ");
+
+    if (savedData["refreshToken"] != null) {
+      print(" found refresh token calling refresh");
+      refresh(refreshUrl);
+    } else {
+      print(" token not found calling login");
+      setState(() {
+        authentication = false;
+        showLoading = false;
+      });
+    }
   }
 
   refresh(url) async {
@@ -49,13 +71,16 @@ class _MyAppState extends State<MyApp> {
     setState(() {
       restaurantId = savedData["restaurantId"];
       staffId = savedData["staffId"];
+      deviceToken = savedData["deviceToken"];
     });
 
     Map<String, String> headers = {
       "Authorization": "Bearer ${savedData["refreshToken"]}"
     };
-    print("headers $headers");
-    http.Response response = await http.post(url, headers: headers);
+    Map<String, dynamic> data = {"device_token": deviceToken};
+    print("headers $headers ");
+    print("data to backend $data ");
+    http.Response response = await http.post(url, headers: headers, body: data);
 
     int statusCode = response.statusCode;
     // this API passes back the id of the new item added to the body
@@ -79,7 +104,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    refresh(refreshUrl);
+    checkRefresh();
 
     super.initState();
   }
