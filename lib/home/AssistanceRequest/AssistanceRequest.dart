@@ -1,26 +1,24 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:staffapp/Store/DataStore.dart';
 import 'package:staffapp/constants.dart';
 import 'package:staffapp/home/history.dart';
 import 'package:staffapp/home/pop_up.dart';
 
 class AssistanceRequestScreen extends StatelessWidget {
-  final List<Map<String, dynamic>> notificationData;
-  final List<Map<String, dynamic>> history;
   final requestStatusUpdate;
   AssistanceRequestScreen({
-    this.notificationData,
-    this.history,
     this.requestStatusUpdate,
   });
 
-  showPopup(context, index) {
+  showPopup(context, int index,DataStore dataStore ) {
     showDialog(
         barrierDismissible: false,
         context: context,
         builder: (BuildContext context) {
           return PopUp(
-            notificationData: notificationData[index],
+            notificationData: dataStore.notificationData[index],
             requestStatusUpdate: requestStatusUpdate,
           );
         });
@@ -32,16 +30,18 @@ class AssistanceRequestScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final DataStore dataStore = Provider.of<DataStore>(context);
+
     return SafeArea(
       child: Scaffold(
         body: ListView(
           children: <Widget>[
             ////////////////////////////////// for current requests//////////////////////////////////
-            notificationData.length != 0
+            dataStore.notificationData.length != 0
                 ? ListView.builder(
                     shrinkWrap: true,
                     primary: false,
-                    itemCount: notificationData.length,
+                    itemCount: dataStore.notificationData.length,
                     itemBuilder: (context, index) {
                       return Card(
                         color: Color(0xffEFEFEF),
@@ -50,7 +50,7 @@ class AssistanceRequestScreen extends StatelessWidget {
                         ),
                         child: Container(
                           padding: EdgeInsets.symmetric(vertical: 8),
-                          child: notificationData[index]["request_type"] ==
+                          child: dataStore.notificationData[index]["request_type"] ==
                                   "pickup_request"
                               ? ListTile(
                                   title: Row(
@@ -61,7 +61,7 @@ class AssistanceRequestScreen extends StatelessWidget {
                                       Text(
                                         '${formatDate(
                                               (DateTime.parse(
-                                                notificationData[index]
+                                                dataStore. notificationData[index]
                                                     ["timestamp"],
                                               )),
                                               [HH, ':', nn],
@@ -77,19 +77,19 @@ class AssistanceRequestScreen extends StatelessWidget {
                                     children: <Widget>[
                                       SizedBox(height: 6),
                                       Text(
-                                        "Table : ${notificationData[index]["table"]}",
+                                        "Table : ${dataStore.notificationData[index]["table"]}",
                                         style: kSubTitleStyle,
                                       ),
                                       SizedBox(height: 4),
                                       Text(
-                                        "Food : ${notificationData[index]["food_name"]}",
+                                        "Food : ${dataStore.notificationData[index]["food_name"]}",
                                         style: kSubTitleStyle,
                                       ),
                                       SizedBox(height: 4),
                                     ],
                                   ),
                                   onTap: () {
-                                    showPopup(context, index);
+                                    showPopup(context, index,dataStore);
                                   },
                                 )
                               : ListTile(
@@ -102,7 +102,7 @@ class AssistanceRequestScreen extends StatelessWidget {
                                       Text(
                                         '${formatDate(
                                               (DateTime.parse(
-                                                notificationData[index]
+                                                dataStore.notificationData[index]
                                                     ["timestamp"],
                                               )),
                                               [HH, ':', nn],
@@ -118,12 +118,12 @@ class AssistanceRequestScreen extends StatelessWidget {
                                     children: <Widget>[
                                       SizedBox(height: 6),
                                       Text(
-                                        "Table : ${notificationData[index]["table"]}",
+                                        "Table : ${dataStore.notificationData[index]["table"]}",
                                         style: kSubTitleStyle,
                                       ),
                                       SizedBox(height: 4),
                                       Text(
-                                        "Type : ${notificationData[index]["assistance_type"]}",
+                                        "Type : ${dataStore.notificationData[index]["assistance_type"]}",
                                         style: kSubTitleStyle,
                                       ),
                                       SizedBox(height: 4),
@@ -132,7 +132,7 @@ class AssistanceRequestScreen extends StatelessWidget {
                                     ],
                                   ),
                                   onTap: () {
-                                    showPopup(context, index);
+                                    showPopup(context, index,dataStore);
                                   },
                                 ),
                         ),
@@ -168,10 +168,10 @@ class AssistanceRequestScreen extends StatelessWidget {
 
             ////////////////////////////////// for past requests//////////////////////////////////
 
-            History(
-              history: history,
-              requestStatusUpdate: requestStatusUpdate,
-            ),
+//            History(
+//              history: history,
+//              requestStatusUpdate: requestStatusUpdate,
+//            ),
           ],
         ),
       ),

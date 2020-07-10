@@ -1,24 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:staffapp/Store/DataStore.dart';
 import 'package:staffapp/constants.dart';
 import 'package:staffapp/data.dart';
-import 'package:staffapp/home/TakeOrders/FoodOrder/restaurantMenu.dart';
+import 'package:staffapp/home/TakeOrders/Billing.dart';
 
-class TakeOrders extends StatelessWidget {
-  final Restaurant restaurant;
-  final String staffId;
+class AssignedTables extends StatelessWidget {
   final List<Tables> assignedTables = [];
 
-  TakeOrders({
-    this.restaurant,
-    this.staffId,
-  });
-
-  getAssignedTables() {
+  getAssignedTables(dataStore) {
     assignedTables.clear();
-    restaurant.tables.forEach((table) {
+    dataStore.restaurant.tables.forEach((table) {
       if (table.staff != null) {
         table.staff.forEach((staff) {
-          if (staff.oid == staffId) {
+          if (staff.oid == dataStore.staffId) {
             assignedTables.add(table);
           }
         });
@@ -28,7 +23,8 @@ class TakeOrders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    getAssignedTables();
+    final DataStore dataStore = Provider.of<DataStore>(context);
+    getAssignedTables(dataStore);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -62,9 +58,9 @@ class TakeOrders extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => RestaurantMenu(
-                          restaurant: restaurant,
-                        ),
+                        builder: (context) => Billing(
+//                          restaurant: restaurant,
+                            ),
                       ),
                     );
                   },

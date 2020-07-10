@@ -4,10 +4,8 @@ import 'package:adhara_socket_io/adhara_socket_io.dart';
 import 'package:audioplayers/audio_cache.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:staffapp/authentication/loginPage.dart';
 import 'package:staffapp/data.dart';
-import 'package:staffapp/drawer/Cart/Cart.dart';
 import 'package:staffapp/home/Tabs.dart';
 import 'package:staffapp/url.dart';
 
@@ -406,11 +404,10 @@ class _ConnectionState extends State<Connection> {
   }
 
   fetchRequestStatus(data) {
+    print("updated status");
     if (data is Map) {
       data = json.encode(data);
     }
-
-    print("updated status");
 
     print(data);
 
@@ -499,52 +496,15 @@ class _ConnectionState extends State<Connection> {
 //  click_action: FLUTTER_NOTIFICATION_CLICK, request_type: assistance_request, assistance_type: help}}
   @override
   Widget build(BuildContext context) {
-//    print(widget.staffId);
-
     return endpointCheck == true
-        ? MultiProvider(
-            providers: [
-              ChangeNotifierProvider<CartData>.value(
-                value: CartData(),
-              ),
-            ],
-            child: Tabs(
-              notificationData: notificationData,
-              history: history,
-              queueOrders: queueOrders,
-              requestStatusUpdate: requestStatusUpdate,
-              staffId: widget.staffId,
-              restaurant: restaurant,
-            ),
-//            MaterialApp(
-//              debugShowCheckedModeBanner: false,
-//              home: SafeArea(
-//                child: Scaffold(
-////                  drawer: Drawer(
-////                    child: DrawerMenu(
-////                      staffId: widget.staffId,
-////                      staffName: staffName,
-////                      restaurant: restaurant,
-////                    ),
-////                  ),
-//                  body:
-//
-//                  Tabs(
-//                    notificationData: notificationData,
-//                    history: history,
-//                    requestStatusUpdate: requestStatusUpdate,
-//                    staffId: widget.staffId,
-//                    restaurant: restaurant,
-//                  ),
-//
-////                      HomePage(
-////                    notificationData: notificationData,
-////                    history: history,
-////                    requestStatusUpdate: requestStatusUpdate,
-////                  ),
-//                ),
-//              ),
-//            ),
+        ? Tabs(
+            sockets: sockets,
+            notificationData: notificationData,
+            history: history,
+            queueOrders: queueOrders,
+            requestStatusUpdate: requestStatusUpdate,
+            staffId: widget.staffId,
+            restaurant: restaurant,
           )
         : LoginPage();
   }

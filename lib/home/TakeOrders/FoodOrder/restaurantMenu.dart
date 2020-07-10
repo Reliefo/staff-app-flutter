@@ -1,14 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:staffapp/Store/DataStore.dart';
 import 'package:staffapp/constants.dart';
-import 'package:staffapp/data.dart';
 import 'package:staffapp/home/TakeOrders/FoodOrder/foodItems.dart';
 
 class RestaurantMenu extends StatefulWidget {
-  final Restaurant restaurant;
-  RestaurantMenu({
-    this.restaurant,
-  });
-
   @override
   _RestaurantMenuState createState() => _RestaurantMenuState();
 }
@@ -32,6 +28,7 @@ class _RestaurantMenuState extends State<RestaurantMenu>
 
   @override
   Widget build(BuildContext context) {
+    final DataStore dataStore = Provider.of<DataStore>(context);
     return SafeArea(
       child: Scaffold(
         body: Container(
@@ -71,10 +68,10 @@ class _RestaurantMenuState extends State<RestaurantMenu>
                     controller: _tabController,
                     children: [
                       FoodItemList(
-                        menu: widget.restaurant.foodMenu,
+                        menu: dataStore.restaurant.foodMenu,
                       ),
                       FoodItemList(
-                        menu: widget.restaurant.barMenu,
+                        menu: dataStore.restaurant.barMenu,
                       ),
                     ],
                   ),
