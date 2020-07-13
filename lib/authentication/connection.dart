@@ -240,7 +240,7 @@ class _ConnectionState extends State<Connection> {
 
     socket.on("order_lists", (data) => fetchInitialLists(data));
     socket.on("new_orders", (data) => fetchNewOrders(data));
-
+    socket.on("billing", (data) => fetchBilled(data));
     ////////////////
 
     socket.connect();
@@ -401,6 +401,48 @@ class _ConnectionState extends State<Connection> {
     setState(() {
       notificationData.add(updateData);
     });
+  }
+
+  fetchBilled(data) {
+    print("inside billing");
+    print(data);
+//    print(data["order_history"].keys.toList());
+//todo: implement billing when requested from customer app
+    if (data["status"] == "billed") {
+      setState(() {
+        /////////////////////// add bill to history ///////////////////
+//        RestaurantOrderHistory history =
+//        RestaurantOrderHistory.fromJson(data["order_history"]);
+//
+//        restaurant.orderHistory?.add(history);
+
+        ///////////////////////  remove and clean ////////////////////
+        queueOrders?.removeWhere((order) => order.tableId == data["table_id"]);
+
+        cookingOrders
+            ?.removeWhere((order) => order.tableId == data["table_id"]);
+        completedOrders
+            ?.removeWhere((order) => order.tableId == data["table_id"]);
+        restaurant.assistanceRequests
+            ?.removeWhere((request) => request.tableId == data["table_id"]);
+
+        Tables billedTable;
+        restaurant.tables?.forEach((table) {
+          if (table.oid == data["table_id"]) {
+            print("table found");
+            billedTable = table;
+          }
+        });
+
+        print("for each complete");
+        billedTable?.users?.clear();
+        print("user cleared");
+        billedTable?.queueCount = 0;
+        billedTable?.cookingCount = 0;
+        billedTable?.completedCount = 0;
+      });
+    }
+    print("table comp");
   }
 
   fetchRequestStatus(data) {
