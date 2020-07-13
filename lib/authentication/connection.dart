@@ -34,9 +34,9 @@ class _ConnectionState extends State<Connection> {
   List<Map<String, dynamic>> notificationData = [];
   List<Map<String, dynamic>> history = [];
 
-  List<TableOrder> queueOrders = [];
-  List<TableOrder> cookingOrders = [];
-  List<TableOrder> completedOrders = [];
+  final List<TableOrder> queueOrders = [];
+  final List<TableOrder> cookingOrders = [];
+  final List<TableOrder> completedOrders = [];
 
   Restaurant restaurant = Restaurant();
 
@@ -233,7 +233,7 @@ class _ConnectionState extends State<Connection> {
     socket.on("staff_details", (data) => fetchInitialData(data));
     socket.on("requests_queue", (data) => fetchRequestQueue(data));
     socket.on("assist", (data) => fetchRequestStatus(data));
-    socket.on("order_updates", (data) => fetchRequestStatus(data));
+    socket.on("order_updates", (data) => fetchOrderStatus(data));
     socket.on("endpoint_check", (data) => checkEndpoint(data));
 
     ////////////
@@ -307,9 +307,7 @@ class _ConnectionState extends State<Connection> {
   fetchInitialLists(data) {
     print("fetching initial lists");
     print(data);
-    ////// should be added to staff data ///////
 
-//    print("her inside fegtch initla lists");
     setState(() {
       if (data is Map) {
         data = json.encode(data);
@@ -317,7 +315,7 @@ class _ConnectionState extends State<Connection> {
 
       queueOrders.clear();
       cookingOrders.clear();
-      completedOrders.clear();
+//      completedOrders.clear();
 
       var decoded = jsonDecode(data);
       decoded["queue"].forEach((item) {
@@ -331,11 +329,11 @@ class _ConnectionState extends State<Connection> {
 
         cookingOrders.add(order);
       });
-      decoded["completed"].forEach((item) {
-        TableOrder ord = TableOrder.fromJson(item);
-
-        completedOrders.add(ord);
-      });
+//      decoded["completed"].forEach((item) {
+//        TableOrder ord = TableOrder.fromJson(item);
+//
+//        completedOrders.add(ord);
+//      });
     });
   }
 
@@ -446,7 +444,7 @@ class _ConnectionState extends State<Connection> {
   }
 
   fetchRequestStatus(data) {
-    print("updated status");
+    print("updated Request status");
     if (data is Map) {
       data = json.encode(data);
     }
@@ -454,43 +452,6 @@ class _ConnectionState extends State<Connection> {
     var decoded = jsonDecode(data);
     print(decoded);
 
-    if (true) {
-//      {"table_order_id":"5f0bdbf8ba93618ef437a89d","status":"rejected","order_id":"5f0bdbf8ba93618ef437a89c",
-////    "food_id":"5f05aff101a3fd27419a425a","staff_id":"5f057719f3930ad304099843","table":"Table 1",
-////    "table_id":"5f0347b4cfb1be420f5827ba","user":"naveen Mac","timestamp":"2020-07-13 09:56:54.860707",
-////    "food_name":"Veg & Chicken"}
-
-      queueOrders.forEach((tableorder) {
-        print(tableorder.oId);
-        if (tableorder.oId == decoded['table_order_id']) {
-          print('table id  matched${decoded['food_id']}');
-          tableorder.orders.forEach((order) {
-            if (order.oId == decoded['order_id']) {
-              print('order id  matched${decoded['food_id']}');
-              order.foodList.forEach((fooditem) {
-                if (fooditem.foodId == decoded['food_id']) {
-                  print('food id  matched${decoded['food_id']}');
-                  fooditem.status = decoded['type'];
-//                   push to cooking and completed orders
-                  pushTo(tableorder, order, fooditem, decoded['type']);
-                  print('coming here at leastsadf');
-
-                  order.removeFoodItem(decoded['food_id']);
-                  print('coming here at least');
-                  tableorder.cleanOrders(order.oId);
-                  if (tableorder.selfDestruct()) {
-                    print('self destruct');
-
-                    queueOrders.removeWhere(
-                        (taborder) => taborder.oId == tableorder.oId);
-                  }
-                }
-              });
-            }
-          });
-        }
-      });
-    }
     if (decoded["request_type"] == "pickup_request") {
       if (decoded["status"] == "pending") {
         setState(() {
@@ -539,6 +500,53 @@ class _ConnectionState extends State<Connection> {
         });
       }
     }
+  }
+
+  fetchOrderStatus(data) {
+    print("updated Order status");
+
+    if (data is Map) {
+      data = json.encode(data);
+    }
+
+    var decoded = jsonDecode(data);
+    print(decoded);
+
+//      {"table_order_id":"5f0bdbf8ba93618ef437a89d","status":"rejected","order_id":"5f0bdbf8ba93618ef437a89c",
+////    "food_id":"5f05aff101a3fd27419a425a","staff_id":"5f057719f3930ad304099843","table":"Table 1",
+////    "table_id":"5f0347b4cfb1be420f5827ba","user":"naveen Mac","timestamp":"2020-07-13 09:56:54.860707",
+////    "food_name":"Veg & Chicken"}
+
+    queueOrders.forEach((tableorder) {
+      print(tableorder.oId);
+      if (tableorder.oId == decoded['table_order_id']) {
+        print('table id  matched${decoded['food_id']}');
+        tableorder.orders.forEach((order) {
+          if (order.oId == decoded['order_id']) {
+            print('order id  matched${decoded['food_id']}');
+            order.foodList.forEach((fooditem) {
+              if (fooditem.foodId == decoded['food_id']) {
+                print('food id  matched${decoded['food_id']}');
+                fooditem.status = decoded['type'];
+//                   push to cooking and completed orders
+                pushTo(tableorder, order, fooditem, decoded['type']);
+                print('coming here at leastsadf');
+
+                order.removeFoodItem(decoded['food_id']);
+                print('coming here at least');
+                tableorder.cleanOrders(order.oId);
+                if (tableorder.selfDestruct()) {
+                  print('self destruct');
+
+                  queueOrders.removeWhere(
+                      (taborder) => taborder.oId == tableorder.oId);
+                }
+              }
+            });
+          }
+        });
+      }
+    });
   }
 
   pushTo(table_order, order, food_item, type) {
@@ -608,23 +616,61 @@ class _ConnectionState extends State<Connection> {
 
   updateRestaurant(data) {
     print("restaurant fetch");
-    setState(() {
-      if (data is Map) {
-        data = json.encode(data);
-      }
 
-      var decoded = jsonDecode(data);
-      print(decoded);
+    if (data is Map) {
+      data = json.encode(data);
+    }
+
+    var decoded = jsonDecode(data);
+    print(decoded);
+    setState(() {
       restaurant = Restaurant.fromJson(decoded);
+    });
+
+    ////// add not billed items //////
+    completedOrders.clear();
+    List allottedTables = [];
+    decoded['tables']?.forEach((table) {
+      table['staff']?.forEach((staff) {
+        if (staff["\$oid"] == widget.staffId) {
+          allottedTables.add(table);
+        }
+      });
+    });
+
+    allottedTables?.forEach((table) {
+      table['table_orders']?.forEach((tableOrder) {
+        List ordersToRemove = [];
+        tableOrder['orders']?.forEach((order) {
+          List foodToRemove = [];
+          order['food_list']?.forEach((food) {
+            if (food['status'] == 'queued') {
+              foodToRemove.add(food);
+            }
+          });
+          foodToRemove?.forEach((food) {
+            order['food_list']?.removeWhere((element) => element == food);
+          });
+          if (order['food_list'].length == 0) {
+            ordersToRemove.add(order);
+          }
+        });
+        ordersToRemove?.forEach((ord) {
+          tableOrder['orders']?.removeWhere((element) => element == ord);
+        });
+        setState(() {
+          if (tableOrder['orders'].isNotEmpty) {
+            completedOrders.add(new TableOrder.fromJson(tableOrder));
+          }
+        });
+      });
     });
   }
 
-//  {notification: {title: Assistance Request from table8, body: Someone asked for help from table8},
-//  data: {assistance_req_id: 5eafa9c7f179757a61077d87, table_id: 5ead65c8e1823a4f2132579c,
-//  user_id: 5eaf03840e993a2a64fcdf95, timestamp: 2020-05-04 11:06:07.148809,
-//  click_action: FLUTTER_NOTIFICATION_CLICK, request_type: assistance_request, assistance_type: help}}
   @override
   Widget build(BuildContext context) {
+    print(restaurant);
+    print(completedOrders);
     return endpointCheck == true
         ? Tabs(
             sockets: sockets,

@@ -28,44 +28,48 @@ class AssignedTables extends StatelessWidget {
     return SafeArea(
       child: Scaffold(
         body: Container(
-          child: GridView.builder(
-              itemCount: assignedTables.length,
-              gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-                mainAxisSpacing: 4.0,
-                crossAxisSpacing: 4.0,
-                childAspectRatio: 2 / 1,
-                maxCrossAxisExtent: 240,
-              ),
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.amber[200],
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(15.0),
-                      ),
-                    ),
-                    margin: EdgeInsets.all(4),
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    child: Center(
-                      child: Text(
-                        assignedTables[index].name,
-                        style: kTitleStyle,
-                      ),
-                    ),
+          child: assignedTables.isNotEmpty
+              ? GridView.builder(
+                  itemCount: assignedTables.length,
+                  gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+                    mainAxisSpacing: 4.0,
+                    crossAxisSpacing: 4.0,
+                    childAspectRatio: 2 / 1,
+                    maxCrossAxisExtent: 240,
                   ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => Billing(
-                          tableId: assignedTables[index].oid,
+                  itemBuilder: (context, index) {
+                    return GestureDetector(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.amber[200],
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(15.0),
+                          ),
+                        ),
+                        margin: EdgeInsets.all(4),
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Center(
+                          child: Text(
+                            assignedTables[index].name,
+                            style: kTitleStyle,
+                          ),
                         ),
                       ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => Billing(
+                              tableId: assignedTables[index].oid,
+                            ),
+                          ),
+                        );
+                      },
                     );
-                  },
-                );
-              }),
+                  })
+              : Center(
+                  child: Text("Not Assigned to any tables."),
+                ),
         ),
       ),
     );

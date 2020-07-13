@@ -43,10 +43,11 @@ class DataStore extends ChangeNotifier {
     sockets['working'].emit('order_acceptance', [encode]);
   }
 
-  billTheTable(data) {
+  billTheTable(localData) {
+    localData["restaurant_id"] = restaurant.restaurantId;
     var encode;
     print("test sending");
-    encode = jsonEncode(data);
+    encode = jsonEncode(localData);
     print(encode);
     sockets['working'].emit('bill_the_table', [encode]);
   }
