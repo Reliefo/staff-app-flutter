@@ -10,8 +10,10 @@ class DataStore extends ChangeNotifier {
   final List<Map<String, dynamic>> notificationData;
   final List<Map<String, dynamic>> history;
   final List<TableOrder> queueOrders;
+  final List<TableOrder> completedOrders;
 
   DataStore({
+    @required this.completedOrders,
     @required this.restaurant,
     @required this.sockets,
     @required this.staffId,
@@ -39,5 +41,13 @@ class DataStore extends ChangeNotifier {
 
     print("sending to backend :  $encode");
     sockets['working'].emit('order_acceptance', [encode]);
+  }
+
+  billTheTable(data) {
+    var encode;
+    print("test sending");
+    encode = jsonEncode(data);
+    print(encode);
+    sockets['working'].emit('bill_the_table', [encode]);
   }
 }

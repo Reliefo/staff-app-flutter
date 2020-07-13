@@ -13,6 +13,7 @@ class Tabs extends StatelessWidget {
   final List<Map<String, dynamic>> notificationData;
   final List<Map<String, dynamic>> history;
   final List<TableOrder> queueOrders;
+  final List<TableOrder> completedOrders;
   final String staffId;
   final Restaurant restaurant;
   final requestStatusUpdate;
@@ -22,6 +23,7 @@ class Tabs extends StatelessWidget {
     this.notificationData,
     this.history,
     this.queueOrders,
+    this.completedOrders,
     this.staffId,
     this.restaurant,
     this.requestStatusUpdate,
@@ -37,6 +39,7 @@ class Tabs extends StatelessWidget {
             notificationData: notificationData,
             history: history,
             queueOrders: queueOrders,
+            completedOrders: completedOrders,
             staffId: staffId,
           ),
         ),

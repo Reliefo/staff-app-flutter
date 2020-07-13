@@ -638,6 +638,7 @@ class TableOrder {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['oId'] = this.oId;
     data['table'] = this.table;
+    data['table_id'] = this.tableId;
     data['status'] = this.status;
     data['timestamp'] = this.timeStamp;
     return data;

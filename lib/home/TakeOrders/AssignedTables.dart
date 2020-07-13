@@ -59,8 +59,8 @@ class AssignedTables extends StatelessWidget {
                       context,
                       MaterialPageRoute(
                         builder: (context) => Billing(
-//                          restaurant: restaurant,
-                            ),
+                          tableId: assignedTables[index].oid,
+                        ),
                       ),
                     );
                   },

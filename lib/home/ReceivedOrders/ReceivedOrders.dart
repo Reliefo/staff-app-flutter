@@ -98,16 +98,11 @@ class _ReceivedOrdersState extends State<ReceivedOrders> {
                                             .foodList[index3]
                                             .foodId,
                                         "status": "rejected",
+                                        "type": "orders"
                                       };
 
                                       dataStore
                                           .orderAcceptanceUpdate(localData);
-
-                                      setState(() {
-                                        dataStore.queueOrders[index]
-                                            .orders[index2].foodList
-                                            .removeAt(index3);
-                                      });
                                     },
                                     background: Container(color: Colors.red),
                                     child: Container(
@@ -193,6 +188,7 @@ class _ReceivedOrdersState extends State<ReceivedOrders> {
                                                       .foodList[index3]
                                                       .foodId,
                                                   "status": "accepted",
+                                                  "type": "orders"
                                                 };
 
                                                 dataStore.orderAcceptanceUpdate(

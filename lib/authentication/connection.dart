@@ -409,11 +409,46 @@ class _ConnectionState extends State<Connection> {
       data = json.encode(data);
     }
 
-    print(data);
-
     var decoded = jsonDecode(data);
     print(decoded);
 
+    if (true) {
+//      {"table_order_id":"5f0bdbf8ba93618ef437a89d","status":"rejected","order_id":"5f0bdbf8ba93618ef437a89c",
+////    "food_id":"5f05aff101a3fd27419a425a","staff_id":"5f057719f3930ad304099843","table":"Table 1",
+////    "table_id":"5f0347b4cfb1be420f5827ba","user":"naveen Mac","timestamp":"2020-07-13 09:56:54.860707",
+////    "food_name":"Veg & Chicken"}
+
+      queueOrders.forEach((tableorder) {
+        print(tableorder.oId);
+        if (tableorder.oId == decoded['table_order_id']) {
+          print('table id  matched${decoded['food_id']}');
+          tableorder.orders.forEach((order) {
+            if (order.oId == decoded['order_id']) {
+              print('order id  matched${decoded['food_id']}');
+              order.foodList.forEach((fooditem) {
+                if (fooditem.foodId == decoded['food_id']) {
+                  print('food id  matched${decoded['food_id']}');
+                  fooditem.status = decoded['type'];
+//                   push to cooking and completed orders
+                  pushTo(tableorder, order, fooditem, decoded['type']);
+                  print('coming here at leastsadf');
+
+                  order.removeFoodItem(decoded['food_id']);
+                  print('coming here at least');
+                  tableorder.cleanOrders(order.oId);
+                  if (tableorder.selfDestruct()) {
+                    print('self destruct');
+
+                    queueOrders.removeWhere(
+                        (taborder) => taborder.oId == tableorder.oId);
+                  }
+                }
+              });
+            }
+          });
+        }
+      });
+    }
     if (decoded["request_type"] == "pickup_request") {
       if (decoded["status"] == "pending") {
         setState(() {
@@ -464,6 +499,58 @@ class _ConnectionState extends State<Connection> {
     }
   }
 
+  pushTo(table_order, order, food_item, type) {
+    setState(() {
+      var foundTable = false;
+      var foundOrder = false;
+      var pushingTo;
+      if (type == "cooking") {
+        pushingTo = cookingOrders;
+      } else if (type == "completed") {
+        pushingTo = completedOrders;
+      } else {
+        pushingTo = completedOrders;
+      }
+
+      if (pushingTo.length == 0) {
+        TableOrder tableOrder = TableOrder.fromJsonNew(table_order.toJson());
+        Order currOrder = Order.fromJsonNew(order.toJson());
+        currOrder.addFirstFood(food_item);
+
+        tableOrder.addFirstOrder(currOrder);
+        print(tableOrder.orders[0].foodList[0].name);
+        pushingTo.add(tableOrder);
+      } else {
+        pushingTo.forEach((tableOrder) {
+          if (table_order.oId == tableOrder.oId) {
+            foundTable = true;
+            tableOrder.orders.forEach((currOrder) {
+              if (order.oId == currOrder.oId) {
+                foundOrder = true;
+                currOrder.addFood(food_item);
+              }
+            });
+            if (!foundOrder) {
+              Order currOrder = Order.fromJsonNew(order.toJson());
+              currOrder.addFirstFood(food_item);
+
+              tableOrder.addOrder(currOrder);
+            }
+          }
+        });
+        if (!foundTable) {
+          TableOrder tableOrder = TableOrder.fromJsonNew(table_order.toJson());
+          Order currOrder = Order.fromJsonNew(order.toJson());
+          currOrder.addFirstFood(food_item);
+
+          tableOrder.addFirstOrder(currOrder);
+          print(tableOrder.orders[0].foodList[0].name);
+          pushingTo.add(tableOrder);
+        }
+      }
+    });
+  }
+
   requestStatusUpdate(localData) {
     var encode;
     String restaurantId = restaurant.restaurantId;
@@ -502,6 +589,7 @@ class _ConnectionState extends State<Connection> {
             notificationData: notificationData,
             history: history,
             queueOrders: queueOrders,
+            completedOrders: completedOrders,
             requestStatusUpdate: requestStatusUpdate,
             staffId: widget.staffId,
             restaurant: restaurant,
