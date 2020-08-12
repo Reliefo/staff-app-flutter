@@ -33,6 +33,7 @@ class _ConnectionState extends State<Connection> {
 
   List<Map<String, dynamic>> notificationData = [];
   List<Map<String, dynamic>> history = [];
+  List<FoodItem> cartItems;
 
   final List<TableOrder> queueOrders = [];
   final List<TableOrder> cookingOrders = [];
@@ -681,6 +682,7 @@ class _ConnectionState extends State<Connection> {
             requestStatusUpdate: requestStatusUpdate,
             staffId: widget.staffId,
             restaurant: restaurant,
+            cartItems: cartItems
           )
         : LoginPage();
   }

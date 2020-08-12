@@ -134,8 +134,8 @@ class FoodItemList extends StatelessWidget {
                           SizedBox(width: 20),
                           // todo: add button
 
-                          initialAddButton(
-                              cartData, menu[index].foodList[index2]),
+                          //initialAddButton(
+                          //cartData, menu[index].foodList[index2]),
 
 //                          addButton(cartData, menu[index].foodList[index2]),
                         ],

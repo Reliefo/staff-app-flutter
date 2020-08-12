@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:staffapp/Store/DataStore.dart';
 import 'package:staffapp/constants.dart';
 import 'package:staffapp/data.dart';
+import 'package:staffapp/drawer/Cart/Cart.dart';
 import 'package:staffapp/home/AssistanceRequest/AssistanceRequest.dart';
 import 'package:staffapp/home/ReceivedOrders/ReceivedOrders.dart';
 import 'package:staffapp/home/TakeOrders/AssignedTables.dart';
@@ -17,6 +18,7 @@ class Tabs extends StatelessWidget {
   final String staffId;
   final Restaurant restaurant;
   final requestStatusUpdate;
+  final List<FoodItem> cartItems;
 
   Tabs({
     this.sockets,
@@ -27,6 +29,7 @@ class Tabs extends StatelessWidget {
     this.staffId,
     this.restaurant,
     this.requestStatusUpdate,
+    this.cartItems
   });
   @override
   Widget build(BuildContext context) {
@@ -43,8 +46,14 @@ class Tabs extends StatelessWidget {
             staffId: staffId,
           ),
         ),
+        ChangeNotifierProvider<CartData>.value(
+          value: CartData(
+            cartItems: cartItems
+          ),
+        ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         home: DefaultTabController(
           initialIndex: 1,
           length: 3,
