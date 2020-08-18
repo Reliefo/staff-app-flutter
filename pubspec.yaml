@@ -15,6 +15,8 @@ dependencies:
   shared_preferences: ^0.5.7+1
   audioplayers: ^0.15.1
   interactive_webview: ^0.1.2
+  fluttertoast: ^7.0.2
+
 
 
 

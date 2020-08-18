@@ -1,5 +1,6 @@
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:staffapp/Store/DataStore.dart';
 import 'package:staffapp/constants.dart';
@@ -36,16 +37,25 @@ class Billing extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: kThemeColor,
-          title: Text("Bill / take order"),
+          title: Text("Billing"),
           actions: <Widget>[
             FlatButton(
               child: Text("Bill"),
               onPressed: () {
                 dataStore.billTheTable({"table_id": tableId});
+                if(itemsToBill.length > 0){
+                  Fluttertoast.showToast(msg: "Bill is sent to the customer",
+                  backgroundColor: Colors.black);
+                }
+                else{
+                  Fluttertoast.showToast(msg: "No items to bill",
+                  backgroundColor: Colors.red);
+                }
               },
             ),
           ],
         ),
+        /*
         floatingActionButton: FloatingActionButton.extended(
 //          icon: Icon(Icons.save),
           backgroundColor: kThemeColor,
@@ -59,6 +69,7 @@ class Billing extends StatelessWidget {
             );
           },
         ),
+        */
         body: ListView.builder(
           primary: false,
           shrinkWrap: true,
