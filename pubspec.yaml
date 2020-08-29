@@ -2,7 +2,7 @@ name: staffapp
 description: A new Flutter application.
 
 
-version: 0.0.7
+version: 0.0.9+13
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -15,10 +15,6 @@ dependencies:
   shared_preferences: ^0.5.7+1
   audioplayers: ^0.15.1
   interactive_webview: ^0.1.2
-
-
-
-
   cupertino_icons: ^0.1.2
 
 dev_dependencies:
