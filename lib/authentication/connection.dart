@@ -1,6 +1,7 @@
 import 'dart:convert';
 
-import 'package:adhara_socket_io/adhara_socket_io.dart';
+//import 'package:adhara_socket_io/adhara_socket_io.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 import 'package:audioplayers/audio_cache.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +29,9 @@ class _ConnectionState extends State<Connection> {
   bool endpointCheck = true;
 //  JSSocketService jsSocket;
   String staffName;
-  SocketIOManager manager;
-  Map<String, SocketIO> sockets = {};
+//  SocketIOManager manager;
+//  Map<String, SocketIO> sockets = {};
+  Map<String, IO.Socket> sockets = {};
 
   List<Map<String, dynamic>> notificationData = [];
   List<Map<String, dynamic>> history = [];
@@ -45,9 +47,9 @@ class _ConnectionState extends State<Connection> {
 
   @override
   void initState() {
-    manager = SocketIOManager();
-
-    initSocket(uri);
+//    manager = SocketIOManager();
+//    initSocket(uri);
+    initWebSocket();
 
 //    initNewSocket();
     printToken();
@@ -92,143 +94,99 @@ class _ConnectionState extends State<Connection> {
     );
   }
 
-//  initNewSocket() {
-//    jsSocket = new JSSocketService();
+//  initSocket(uri) async {
+//    print('hey');
+////    print(loginSession.jwt);
+//    print(sockets.length);
+//    var identifier = 'working';
+//    SocketIO socket = await manager.createInstance(SocketOptions(
+//        //Socket IO server URI
+//        uri,
+//        nameSpace: "/reliefo",
+//        //Query params - can be used for authentication
+//        query: {
+//          "jwt": widget.jwt,
+////          "username": loginSession.username,
+//          "info": "new connection from adhara-socketio",
+//          "timestamp": DateTime.now().toString()
+//        },
+//        //Enable or disable platform channel logging
+//        enableLogging: false,
+//        transports: [
+//          Transports.WEB_SOCKET /*, Transports.POLLING*/
+////          Transports.POLLING
+//        ] //Enable required transport
 //
-//    JSSocketService.jsWebview.didReceiveMessage.listen((message) {
-//      String eventName = message.data["eventName"]; // event name from server
-//      String eventData = message.data["eventData"]; // event data from server
+//        ));
+//    socket.onConnect((data) {
+//      pprint({"Status": "connected..."});
 //
-//      switch (eventName) {
-//        case "ready_to_connect":
-//          {
-//            print('[socket] -> connecting with jwt..!');
-//            jsSocket.socketEmit("connect",
-//                jsonEncode({"naveen": widget.jwt, "socket_url": uri}));
-//            break;
-//          }
+//      socket.emit("check_endpoint", [
+//        jsonEncode({"staff_id": widget.staffId})
+//      ]);
 //
-//        case "connect":
-//          {
-//            print('[socket] -> connected');
-//
-//            jsSocket.socketEmit("fetch_rest_manager",
-//                jsonEncode({"restaurant_id": widget.restaurantId}));
-//            break;
-//          }
-//        case "disconnect":
-//          {
-//            print('[socket] -> disconnect');
-//            break;
-//          }
-//        case "reconnect_attempt":
-//          {
-//            print('[socket] -> reconnect_attempt');
-//            break;
-//          }
-//        case "reconnect":
-//          {
-//            print('[socket] -> reconnect');
-//            break;
-//          }
-//
-//        case "logger":
-//          {
-//            print('[socket] -> logger');
-//            pprint(eventData);
-//            break;
-//          }
-//
-//        case "restaurant_object":
-//          {
-//            print('[socket] -> restaurant object');
-//            updateRestaurant(eventData);
-//            break;
-//          }
-//
-//        case "staff_details":
-//          {
-//            print('[socket] -> staff details');
-//            fetchInitialData(eventData);
-//            break;
-//          }
-//        case "requests_queue":
-//          {
-//            print('[socket] -> requests queue');
-//            fetchRequestQueue(eventData);
-//            break;
-//          }
-//        case "assist":
-//          {
-//            print('[socket] -> assist');
-//            fetchRequestStatus(eventData);
-//            break;
-//          }
-//
-//        case "order_updates":
-//          {
-//            print('[socket] -> order updates');
-//            fetchRequestStatus(eventData);
-//            break;
-//          }
-//
-//        case "endpoint_check":
-//          {
-//            print('[socket] -> endpoint check');
-//            checkEndpoint(eventData);
-//            break;
-//          }
-//      }
+//      socket.emit("check_logger", [" sending........."]);
+//      socket.emit("fetch_staff_details", [
+//        jsonEncode(
+//            {"staff_id": widget.staffId, "restaurant_id": widget.restaurantId})
+//      ]);
 //    });
+//
+//    socket.onConnectError(pprint);
+//    socket.onConnectTimeout(pprint);
+//    socket.onError(pprint);
+//    socket.onDisconnect((data) {
+//      print('object disconnnecgts');
+//    });
+//    socket.on("logger", (data) {
+//      print("From logger :  $data");
+//    });
+//
+//    socket.on("restaurant_object", (data) => updateRestaurant(data));
+//    socket.on("staff_details", (data) => fetchInitialData(data));
+//    socket.on("requests_queue", (data) => fetchRequestQueue(data));
+//    socket.on("assist", (data) => fetchRequestStatus(data));
+//    socket.on("order_updates", (data) => fetchOrderStatus(data));
+//    socket.on("endpoint_check", (data) => checkEndpoint(data));
+//
+//    ////////////
+//
+//    socket.on("order_lists", (data) => fetchInitialLists(data));
+//    socket.on("new_orders", (data) => fetchNewOrders(data));
+//    socket.on("billing", (data) => fetchBilled(data));
+//    ////////////////
+//
+//    socket.connect();
+//    sockets[identifier] = socket;
 //  }
 
-  initSocket(uri) async {
-    print('hey');
-//    print(loginSession.jwt);
-    print(sockets.length);
-    var identifier = 'working';
-    SocketIO socket = await manager.createInstance(SocketOptions(
-        //Socket IO server URI
-        uri,
-        nameSpace: "/reliefo",
-        //Query params - can be used for authentication
-        query: {
-          "jwt": widget.jwt,
-//          "username": loginSession.username,
-          "info": "new connection from adhara-socketio",
-          "timestamp": DateTime.now().toString()
-        },
-        //Enable or disable platform channel logging
-        enableLogging: false,
-        transports: [
-          Transports.WEB_SOCKET /*, Transports.POLLING*/
-//          Transports.POLLING
-        ] //Enable required transport
-
-        ));
-    socket.onConnect((data) {
-      pprint({"Status": "connected..."});
-
-      socket.emit("check_endpoint", [
-        jsonEncode({"staff_id": widget.staffId})
-      ]);
-
-      socket.emit("check_logger", [" sending........."]);
-      socket.emit("fetch_staff_details", [
-        jsonEncode(
-            {"staff_id": widget.staffId, "restaurant_id": widget.restaurantId})
-      ]);
+  initWebSocket() async {
+    // Dart client
+    IO.Socket socket = IO.io("https://liqr.cc/reliefo", <String, dynamic>{
+      'transports': ['websocket'],
+//      'autoConnect': false,
+//      'transports': ['polling'],
+      'extraHeaders': {'Authorization': 'Bearer ' + widget.jwt} // optional
     });
-
-    socket.onConnectError(pprint);
-    socket.onConnectTimeout(pprint);
-    socket.onError(pprint);
-    socket.onDisconnect((data) {
-      print('object disconnnecgts');
+    socket.on('connect', (_) {
+      print('connected to the server');
+//      setState(() {
+//        webSocketConnected = true;
+//      });
+      socket.emit("check_logger", " sending.........");
+      socket.emit(
+          "fetch_staff_details",
+          jsonEncode({
+            "staff_id": widget.staffId,
+            "restaurant_id": widget.restaurantId
+          }));
+//      socket.emit("fetch_rest_manager",
+//          jsonEncode({"restaurant_id": widget.restaurantId}));
     });
-    socket.on("logger", (data) {
-      print("From logger :  $data");
-    });
+    socket.on('event', (data) => print(data));
+    socket.on('disconnect', (_) => print('disconnect'));
+    socket.on('fromServer', (_) => print(_));
+    socket.on("billing", (data) => fetchBilled(data));
 
     socket.on("restaurant_object", (data) => updateRestaurant(data));
     socket.on("staff_details", (data) => fetchInitialData(data));
@@ -242,10 +200,7 @@ class _ConnectionState extends State<Connection> {
     socket.on("order_lists", (data) => fetchInitialLists(data));
     socket.on("new_orders", (data) => fetchNewOrders(data));
     socket.on("billing", (data) => fetchBilled(data));
-    ////////////////
-
-    socket.connect();
-    sockets[identifier] = socket;
+    sockets["liqr"] = socket;
   }
 
   pprint(data) {
@@ -612,7 +567,7 @@ class _ConnectionState extends State<Connection> {
     encode = jsonEncode(localData["data"]);
 
     print("sending to backend :  $encode");
-    sockets['working'].emit('staff_acceptance', [encode]);
+    sockets['liqr'].emit('staff_acceptance', encode);
   }
 
   updateRestaurant(data) {
@@ -670,8 +625,6 @@ class _ConnectionState extends State<Connection> {
 
   @override
   Widget build(BuildContext context) {
-    print(restaurant);
-    print(completedOrders);
     return endpointCheck == true
         ? Tabs(
             sockets: sockets,
@@ -682,8 +635,7 @@ class _ConnectionState extends State<Connection> {
             requestStatusUpdate: requestStatusUpdate,
             staffId: widget.staffId,
             restaurant: restaurant,
-            cartItems: cartItems
-          )
+            cartItems: cartItems)
         : LoginPage();
   }
 }

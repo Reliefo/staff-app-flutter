@@ -111,8 +111,6 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    print("here build method");
-    print(refreshUrl);
     return showLoading == true
         ? LoadingPage()
         : authentication == true

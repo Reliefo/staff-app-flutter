@@ -1,4 +1,3 @@
-import 'package:adhara_socket_io/adhara_socket_io.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:staffapp/Store/DataStore.dart';
@@ -8,9 +7,10 @@ import 'package:staffapp/drawer/Cart/Cart.dart';
 import 'package:staffapp/home/AssistanceRequest/AssistanceRequest.dart';
 import 'package:staffapp/home/ReceivedOrders/ReceivedOrders.dart';
 import 'package:staffapp/home/TakeOrders/AssignedTables.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 class Tabs extends StatelessWidget {
-  final Map<String, SocketIO> sockets;
+  Map<String, IO.Socket> sockets = {};
   final List<Map<String, dynamic>> notificationData;
   final List<Map<String, dynamic>> history;
   final List<TableOrder> queueOrders;
@@ -20,17 +20,16 @@ class Tabs extends StatelessWidget {
   final requestStatusUpdate;
   final List<FoodItem> cartItems;
 
-  Tabs({
-    this.sockets,
-    this.notificationData,
-    this.history,
-    this.queueOrders,
-    this.completedOrders,
-    this.staffId,
-    this.restaurant,
-    this.requestStatusUpdate,
-    this.cartItems
-  });
+  Tabs(
+      {this.sockets,
+      this.notificationData,
+      this.history,
+      this.queueOrders,
+      this.completedOrders,
+      this.staffId,
+      this.restaurant,
+      this.requestStatusUpdate,
+      this.cartItems});
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
@@ -47,9 +46,7 @@ class Tabs extends StatelessWidget {
           ),
         ),
         ChangeNotifierProvider<CartData>.value(
-          value: CartData(
-            cartItems: cartItems
-          ),
+          value: CartData(cartItems: cartItems),
         ),
       ],
       child: MaterialApp(

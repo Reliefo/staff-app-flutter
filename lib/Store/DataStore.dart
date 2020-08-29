@@ -30,7 +30,7 @@ class DataStore extends ChangeNotifier {
     encode = jsonEncode(localData["data"]);
 
     print("sending to backend :  $encode");
-    sockets['working'].emit('staff_acceptance', [encode]);
+    sockets['liqr'].emit('staff_acceptance', encode);
   }
 
   orderAcceptanceUpdate(Map<String, dynamic> localData) {
@@ -40,7 +40,7 @@ class DataStore extends ChangeNotifier {
     var encode = jsonEncode(localData);
 
     print("sending to backend :  $encode");
-    sockets['working'].emit('order_acceptance', [encode]);
+    sockets['liqr'].emit('order_acceptance', encode);
   }
 
   billTheTable(localData) {
@@ -49,6 +49,6 @@ class DataStore extends ChangeNotifier {
     print("test sending");
     encode = jsonEncode(localData);
     print(encode);
-    sockets['working'].emit('bill_the_table', [encode]);
+    sockets['liqr'].emit('bill_the_table', encode);
   }
 }
