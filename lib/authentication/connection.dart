@@ -682,7 +682,8 @@ class _ConnectionState extends State<Connection> {
             requestStatusUpdate: requestStatusUpdate,
             staffId: widget.staffId,
             restaurant: restaurant,
-            cartItems: cartItems
+            cartItems: cartItems,
+            staffName: staffName
           )
         : LoginPage();
   }

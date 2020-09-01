@@ -7,10 +7,12 @@ class DrawerMenu extends StatelessWidget {
   final Restaurant restaurant;
   final String staffName;
   final String staffId;
+  final sockets;
   DrawerMenu({
-    this.restaurant,
+    this.sockets,
     this.staffName,
     this.staffId,
+    this.restaurant,
   });
 
   clearData() async {
@@ -26,11 +28,11 @@ class DrawerMenu extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Text(restaurant.name),
-              Text("Hey ! $staffName "),
+              Text("Hey $staffName !"),
             ],
           ),
         ),
-
+/*
         FlatButton(
           child: Center(
             child: Text('Assigned Tables'),
@@ -48,8 +50,8 @@ class DrawerMenu extends StatelessWidget {
 //            );
           },
         ),
-
-        Divider(),
+*/
+        //Divider(),
 
         FlatButton(
           child: Center(
@@ -66,6 +68,7 @@ class DrawerMenu extends StatelessWidget {
             );
           },
         ),
+        Divider(),
         ///////////////////
       ],
     );

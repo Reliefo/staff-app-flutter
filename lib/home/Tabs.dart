@@ -5,6 +5,7 @@ import 'package:staffapp/Store/DataStore.dart';
 import 'package:staffapp/constants.dart';
 import 'package:staffapp/data.dart';
 import 'package:staffapp/drawer/Cart/Cart.dart';
+import 'package:staffapp/drawer/drawerMenu.dart';
 import 'package:staffapp/home/AssistanceRequest/AssistanceRequest.dart';
 import 'package:staffapp/home/ReceivedOrders/ReceivedOrders.dart';
 import 'package:staffapp/home/TakeOrders/AssignedTables.dart';
@@ -19,6 +20,7 @@ class Tabs extends StatelessWidget {
   final Restaurant restaurant;
   final requestStatusUpdate;
   final List<FoodItem> cartItems;
+  final String staffName;
 
   Tabs({
     this.sockets,
@@ -29,7 +31,8 @@ class Tabs extends StatelessWidget {
     this.staffId,
     this.restaurant,
     this.requestStatusUpdate,
-    this.cartItems
+    this.cartItems,
+    this.staffName
   });
   @override
   Widget build(BuildContext context) {
@@ -58,12 +61,20 @@ class Tabs extends StatelessWidget {
           initialIndex: 1,
           length: 3,
           child: Scaffold(
+            drawer: Drawer(
+              child: DrawerMenu(
+                sockets: sockets,
+                staffName: staffName,
+                staffId: staffId,
+                restaurant: restaurant,
+              ),
+            ),
             body: TabBarView(
               children: [
-                ReceivedOrders(),
                 AssistanceRequestScreen(
                   requestStatusUpdate: requestStatusUpdate,
                 ),
+                ReceivedOrders(),
                 AssignedTables(),
               ],
             ),
@@ -72,12 +83,12 @@ class Tabs extends StatelessWidget {
               child: TabBar(
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.error),
-                    text: 'Orders',
-                  ),
-                  Tab(
                     icon: Icon(Icons.assistant),
                     text: 'Assistance',
+                  ),
+                  Tab(
+                    icon: Icon(Icons.error),
+                    text: 'Orders',
                   ),
                   Tab(
                     icon: Icon(Icons.touch_app),
