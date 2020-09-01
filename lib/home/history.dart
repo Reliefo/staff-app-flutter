@@ -223,7 +223,7 @@ class _HistoryState extends State<History> {
           )
         : Center(
             child: Container(
-              child: Text("No Requests"),
+              child: Text(" "),
             ),
           );
   }

@@ -6,12 +6,17 @@ import 'package:staffapp/constants.dart';
 import 'package:staffapp/home/history.dart';
 import 'package:staffapp/home/pop_up.dart';
 
-class AssistanceRequestScreen extends StatelessWidget {
+class AssistanceRequestScreen extends StatefulWidget {
   final requestStatusUpdate;
   AssistanceRequestScreen({
     this.requestStatusUpdate,
   });
 
+  @override
+  _AssistanceRequestScreenState createState() => _AssistanceRequestScreenState();
+}
+
+class _AssistanceRequestScreenState extends State<AssistanceRequestScreen> {
   showPopup(context, int index,DataStore dataStore ) {
     showDialog(
         barrierDismissible: false,
@@ -19,14 +24,14 @@ class AssistanceRequestScreen extends StatelessWidget {
         builder: (BuildContext context) {
           return PopUp(
             notificationData: dataStore.notificationData[index],
-            requestStatusUpdate: requestStatusUpdate,
+            requestStatusUpdate: widget.requestStatusUpdate,
           );
         });
   }
 
-  sendStatus(status, selectedNotification) {
-    requestStatusUpdate({"status": status, "data": selectedNotification});
-  }
+  //sendStatus(status, selectedNotification) {
+    //widget.requestStatusUpdate({"status": status, "data": selectedNotification});
+  //}
 
   @override
   Widget build(BuildContext context) {
@@ -168,10 +173,10 @@ class AssistanceRequestScreen extends StatelessWidget {
 
             ////////////////////////////////// for past requests//////////////////////////////////
 
-//            History(
-//              history: history,
-//              requestStatusUpdate: requestStatusUpdate,
-//            ),
+            History(
+              history: dataStore.history,
+              requestStatusUpdate: widget.requestStatusUpdate,
+            ),
           ],
         ),
       ),
