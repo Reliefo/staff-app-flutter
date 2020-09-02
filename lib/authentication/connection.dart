@@ -459,8 +459,6 @@ class _ConnectionState extends State<Connection> {
   }
 
   fetchOrderStatus(data) {
-    print("updated Order status");
-
     if (data is Map) {
       data = json.encode(data);
     }
@@ -472,36 +470,39 @@ class _ConnectionState extends State<Connection> {
 ////    "food_id":"5f05aff101a3fd27419a425a","staff_id":"5f057719f3930ad304099843","table":"Table 1",
 ////    "table_id":"5f0347b4cfb1be420f5827ba","user":"naveen Mac","timestamp":"2020-07-13 09:56:54.860707",
 ////    "food_name":"Veg & Chicken"}
-
+    var tableOrderIdToRemove;
     queueOrders.forEach((tableorder) {
       print(tableorder.oId);
       if (tableorder.oId == decoded['table_order_id']) {
-        print('table id  matched${decoded['food_id']}');
         tableorder.orders.forEach((order) {
           if (order.oId == decoded['order_id']) {
-            print('order id  matched${decoded['food_id']}');
+            var foundFood = false;
             order.foodList.forEach((fooditem) {
               if (fooditem.foodId == decoded['food_id']) {
                 print('food id  matched${decoded['food_id']}');
                 fooditem.status = decoded['type'];
 //                   push to cooking and completed orders
                 pushTo(tableorder, order, fooditem, decoded['type']);
-                print('coming here at leastsadf');
-
-                order.removeFoodItem(decoded['food_id']);
-                print('coming here at least');
-                tableorder.cleanOrders(order.oId);
+                foundFood = true;
+                print('damn growable');
                 if (tableorder.selfDestruct()) {
                   print('self destruct');
 
-                  queueOrders.removeWhere(
-                      (taborder) => taborder.oId == tableorder.oId);
+                  tableOrderIdToRemove = tableorder.oId;
                 }
               }
             });
+            if (foundFood) {
+              order.removeFoodItem(decoded['food_id']);
+              tableorder.cleanOrders(order.oId);
+            }
           }
         });
       }
+    });
+    setState(() {
+      queueOrders
+          .removeWhere((taborder) => taborder.oId == tableOrderIdToRemove);
     });
   }
 

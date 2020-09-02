@@ -2,7 +2,7 @@ name: staffapp
 description: A new Flutter application.
 
 
-version: 0.0.9+13
+version: 0.0.10+14
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
